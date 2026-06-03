@@ -54,7 +54,9 @@ cursor:pointer;
 
 .bottom{
 position:absolute;
-bottom:40px;
+bottom:25px;
+left:0;
+width:100%;
 text-align:center;
 }
 
@@ -86,7 +88,6 @@ margin:8px 0;
 font-size:16px;
 font-weight:bold;
 margin-bottom:20px;
-
 background:linear-gradient(
 90deg,
 #ff0000,
@@ -97,7 +98,6 @@ background:linear-gradient(
 #4b0082,
 #8b00ff
 );
-
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
 }
@@ -172,6 +172,18 @@ background:linear-gradient(
 );
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
+}
+
+@media screen and (min-width:900px){
+
+.bottom{
+bottom:40px;
+}
+
+.madeby{
+font-size:16px;
+}
+
 }
 
 </style>

@@ -53,11 +53,12 @@ cursor:pointer;
 }
 
 .bottom{
-position:absolute;
-bottom:25px;
+position:fixed;
+bottom:15px;
 left:0;
 width:100%;
 text-align:center;
+z-index:1000;
 }
 
 /* LOGIN PAGE */
@@ -157,7 +158,8 @@ background:linear-gradient(
 }
 
 .madeby{
-margin-top:4px;
+display:block;
+margin-top:5px;
 font-size:12px;
 font-weight:700;
 background:linear-gradient(
@@ -176,8 +178,25 @@ background:linear-gradient(
 
 @media screen and (min-width:900px){
 
+#welcome img{
+width:180px;
+}
+
+#welcome h1{
+font-size:60px;
+}
+
+.rainbow{
+font-size:28px;
+}
+
+.openbtn{
+font-size:24px;
+padding:18px 40px;
+}
+
 .bottom{
-bottom:40px;
+bottom:25px;
 }
 
 .madeby{

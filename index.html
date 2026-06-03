@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -40,12 +41,6 @@ font-size:42px;
 margin:20px 0 10px;
 }
 
-#welcome p{
-font-size:20px;
-color:#ddd;
-padding:0 20px;
-}
-
 .openbtn{
 background:#4f5dff;
 color:white;
@@ -61,7 +56,6 @@ cursor:pointer;
 position:absolute;
 bottom:40px;
 text-align:center;
-color:#aaa;
 }
 
 /* LOGIN PAGE */
@@ -145,6 +139,41 @@ border:2px solid #1877f2;
 margin-top:40px;
 }
 
+.rainbow{
+font-size:20px;
+font-weight:bold;
+background:linear-gradient(
+90deg,
+#ff0000,
+#ff7f00,
+#ffff00,
+#00aa00,
+#0000ff,
+#4b0082,
+#8b00ff
+);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.madeby{
+margin-top:4px;
+font-size:12px;
+font-weight:700;
+background:linear-gradient(
+90deg,
+#ff0000,
+#ff7f00,
+#ffff00,
+#00aa00,
+#0000ff,
+#4b0082,
+#8b00ff
+);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
 </style>
 </head>
 
@@ -156,7 +185,9 @@ margin-top:40px;
 
 <h1>𝐆𝐎𝐃𝐋𝐈𝐍𝐒𝐓𝐀</h1>
 
-<p>India's Future Social Media App</p>
+<p class="rainbow">
+India's Future Social Media App
+</p>
 
 <button class="openbtn" onclick="openApp()">
 Open GODLINSTA
@@ -165,8 +196,20 @@ Open GODLINSTA
 <p style="margin-top:25px;">Log In or Sign Up</p>
 
 <div class="bottom">
-from<br>
-<b>GODLINSTA</b>
+
+<div style="
+color:white;
+font-size:18px;
+font-weight:900;
+letter-spacing:2px;
+">
+𝗙𝗥𝗢𝗠
+</div>
+
+<div class="madeby">
+𝐌𝐀𝐃𝐄 𝐈𝐍 𝐁𝐘 𝐒𝐇𝐈𝐕𝐀
+</div>
+
 </div>
 
 </div>
@@ -202,3 +245,4 @@ document.getElementById("loginPage").style.display="block";
 
 </body>
 </html>
+```

@@ -235,15 +235,56 @@ India's Future Social Media App
 
 <a href="#" class="link">Forgot Password?</a>
 
-<button class="btn create">Create New Account</button>
+<button class="btn create" onclick="openSignup()">
+Create New Account
+</button>
+
+```html
+</div>
+
+<div class="container" id="signupPage" style="display:none;">
+
+<img src="GODL LOGO.png" class="logo">
+
+<h1 class="godlinsta-title">𝐂𝐑𝐄𝐀𝐓𝐄 𝐀𝐂𝐂𝐎𝐔𝐍𝐓</h1>
+
+<p class="godlinsta-tagline">
+Join GODLINSTA Today
+</p>
+
+<input type="text" placeholder="Full Name">
+
+<input type="text" placeholder="Username">
+
+<input type="email" placeholder="Email">
+
+<input type="password" placeholder="Password">
+
+<button class="btn">Sign Up</button>
+
+<button class="btn create" onclick="backToLogin()">
+Back To Login
+</button>
 
 </div>
 
 <script>
+
 function openApp(){
 document.getElementById("welcome").style.display="none";
 document.getElementById("loginPage").style.display="block";
 }
+
+function openSignup(){
+document.getElementById("loginPage").style.display="none";
+document.getElementById("signupPage").style.display="block";
+}
+
+function backToLogin(){
+document.getElementById("signupPage").style.display="none";
+document.getElementById("loginPage").style.display="block";
+}
+
 </script>
 
 </body>

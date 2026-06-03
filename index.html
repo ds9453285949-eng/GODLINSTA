@@ -199,7 +199,7 @@ GOLDINSTA APP SOON...
 <p style="margin-top:25px;">
 
 <a href="#" onclick="openApp()" style="
-color:white;
+color:#4f5dff;
 text-decoration:none;
 font-size:20px;
 font-weight:bold;
@@ -249,13 +249,15 @@ letter-spacing:2px;
 India's Future Social Media App
 </p>
 
-<input type="email" placeholder="Email">
+<input type="email" placeholder="Username,Email Or Mobile Number">
 
 <input type="password" placeholder="Password">
 
 <button class="btn">Log In</button>
 
-<a href="#" class="link">Forgot Password?</a>
+<a href="#" class="link" onclick="forgotPassword()">
+Forgot Password?
+</a>
 
 <button class="btn create" onclick="openSignup()">
 Create New Account
@@ -311,6 +313,10 @@ document.getElementById("welcome").style.display="none";
 document.getElementById("signupPage").style.display="block";
 }
 
+  function forgotPassword(){
+alert("Forgot Password feature coming soon!");
+}
+  
 </script>
 
 </body>

@@ -9,15 +9,69 @@
 
 body{
 margin:0;
-background:#fafafa;
 font-family:Arial,sans-serif;
+background:#fafafa;
 }
+
+/* SPLASH SCREEN */
+
+#welcome{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100vh;
+background:#000;
+color:white;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+z-index:999;
+}
+
+#welcome img{
+width:110px;
+}
+
+#welcome h1{
+font-size:42px;
+margin:20px 0 10px;
+}
+
+#welcome p{
+font-size:20px;
+color:#ddd;
+padding:0 20px;
+}
+
+.openbtn{
+background:#4f5dff;
+color:white;
+border:none;
+padding:15px 30px;
+border-radius:15px;
+font-size:20px;
+margin-top:20px;
+cursor:pointer;
+}
+
+.bottom{
+position:absolute;
+bottom:40px;
+text-align:center;
+color:#aaa;
+}
+
+/* LOGIN PAGE */
 
 .container{
 max-width:320px;
 margin:auto;
 padding:25px 12px;
 text-align:center;
+display:none;
 }
 
 .logo{
@@ -96,9 +150,30 @@ margin-top:40px;
 
 <body>
 
-<div class="container">
+<div id="welcome">
 
-<img src="GODL LOGO.png" class="logo" alt="GODLINSTA Logo">
+<img src="GODL LOGO.png">
+
+<h1>𝐆𝐎𝐃𝐋𝐈𝐍𝐒𝐓𝐀</h1>
+
+<p>India's Future Social Media App</p>
+
+<button class="openbtn" onclick="openApp()">
+Open GODLINSTA
+</button>
+
+<p style="margin-top:25px;">Log In or Sign Up</p>
+
+<div class="bottom">
+from<br>
+<b>GODLINSTA</b>
+</div>
+
+</div>
+
+<div class="container" id="loginPage">
+
+<img src="GODL LOGO.png" class="logo">
 
 <h1 class="godlinsta-title">𝐆𝐎𝐃𝐋𝐈𝐍𝐒𝐓𝐀</h1>
 
@@ -117,6 +192,13 @@ India's Future Social Media App
 <button class="btn create">Create New Account</button>
 
 </div>
+
+<script>
+function openApp(){
+document.getElementById("welcome").style.display="none";
+document.getElementById("loginPage").style.display="block";
+}
+</script>
 
 </body>
 </html>

@@ -2,35 +2,94 @@
 <html>
 <head>
 <title>GODLINSTA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 body{
-background:#0f0f0f;
-color:white;
-font-family:Arial;
-text-align:center;
-padding-top:100px;
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#fafafa;
+    text-align:center;
 }
-button{
-padding:12px 25px;
-border:none;
-border-radius:10px;
-background:#ff0066;
-color:white;
-font-size:18px;
-cursor:pointer;
+
+.container{
+    max-width:350px;
+    margin:auto;
+    padding-top:60px;
+}
+
+.logo{
+    width:120px;
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    margin:8px 0;
+    border:1px solid #ddd;
+    border-radius:10px;
+    box-sizing:border-box;
+    font-size:16px;
+}
+
+.btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#1877f2;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.link{
+    color:#1877f2;
+    cursor:pointer;
+    margin-top:15px;
+    display:block;
+    text-decoration:none;
+}
+
+.create{
+    background:white;
+    color:#1877f2;
+    border:2px solid #1877f2;
+}
+
+h1{
+    margin:10px 0;
+}
+
+p{
+    color:#666;
 }
 </style>
 </head>
 
 <body>
 
-<div style="text-align:center;">
-  <img src="GODL LOGO.png" width="120">
-  <h1>GODLINSTA</h1>
-  <p>India's Future Social Media App</p>
+<div class="container">
+
+<img src="GODL LOGO.png" class="logo">
+
+<h1>GODLINSTA</h1>
+
+<p>India's Future Social Media App</p>
+
+<input type="email" placeholder="Email">
+
+<input type="password" placeholder="Password">
+
+<button class="btn">Log In</button>
+
+<a href="#" class="link">Forgot Password?</a>
+
+<button class="btn create">Create New Account</button>
+
 </div>
-  
-<button>Create Account</button>
 
 </body>
 </html>

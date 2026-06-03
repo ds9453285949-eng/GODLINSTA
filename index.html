@@ -194,10 +194,42 @@ India's Future Social Media App
 Open GODLINSTA
 </button>
 
-<p style="margin-top:25px;color:white;">
-Log In or Sign Up
-</p>
+<p style="margin-top:25px;">
+<a href="#" onclick="openApp()" style="
+color:white;
+text-decoration:none;
+font-size:20px;
+font-weight:bold;
+">
+Log In
+</a>
 
+<span style="color:white;"> or </span>
+
+<p style="margin-top:25px;">
+
+<a href="#" onclick="openApp()" style="
+color:white;
+text-decoration:none;
+font-size:20px;
+font-weight:bold;
+">
+Log In
+</a>
+
+<span style="color:white;"> or </span>
+
+<a href="#" onclick="openSignupDirect()" style="
+color:#4f5dff;
+text-decoration:none;
+font-size:20px;
+font-weight:bold;
+">
+Sign Up
+</a>
+
+</p>
+  
 <div class="bottom">
 
 <div style="
@@ -239,7 +271,6 @@ India's Future Social Media App
 Create New Account
 </button>
 
-```html
 </div>
 
 <div class="container" id="signupPage" style="display:none;">
@@ -285,8 +316,13 @@ document.getElementById("signupPage").style.display="none";
 document.getElementById("loginPage").style.display="block";
 }
 
+  function openSignupDirect(){
+document.getElementById("welcome").style.display="none";
+document.getElementById("signupPage").style.display="block";
+}
+
 </script>
 
 </body>
 </html>
-```
+

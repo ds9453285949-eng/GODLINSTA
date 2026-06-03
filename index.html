@@ -191,16 +191,15 @@ India's Future Social Media App
 </p>
 
 <a href="login.html">
-<button class="openbtn">
+<button class="openbtn" onclick="openApp()">
 GODLINSTA APP SOON....
 </button>
-</a>
 
 <span style="color:white;"> or </span>
 
 <p style="margin-top:25px;">
 
-<a href="login.html" style="
+<a href="#" onclick="openApp()" style="
 color:#4f5dff;
 text-decoration:none;
 font-size:20px;
@@ -211,7 +210,7 @@ Log In
 
 <span style="color:white;"> or </span>
 
-<a href="signup.html" style="
+<a href="#" onclick="openSignupDirect()" style="
 color:#4f5dff;
 text-decoration:none;
 font-size:20px;
@@ -294,6 +293,32 @@ Back To Login
 </div>
 
 <script>
+
+function openApp(){
+document.getElementById("welcome").style.display="none";
+document.getElementById("loginPage").style.display="block";
+}
+
+function openSignup(){
+document.getElementById("loginPage").style.display="none";
+document.getElementById("signupPage").style.display="block";
+}
+
+function backToLogin(){
+document.getElementById("signupPage").style.display="none";
+document.getElementById("loginPage").style.display="block";
+}
+
+function openSignupDirect(){
+document.getElementById("welcome").style.display="none";
+document.getElementById("signupPage").style.display="block";
+}
+
+function forgotPassword(){
+alert("Forgot Password feature coming soon!");
+}
+
+</script>
 
   function forgotPassword(){
 alert("Forgot Password feature coming soon!");

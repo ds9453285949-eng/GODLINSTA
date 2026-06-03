@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,8 +20,8 @@ body{
 }
 
 .logo{
-    width:120px;
-    margin-bottom:20px;
+    width:140px;
+    margin-bottom:10px;
 }
 
 input{
@@ -59,12 +60,61 @@ input{
     border:2px solid #1877f2;
 }
 
-h1{
+.godlinsta-title{
+    font-size:58px;
+    font-weight:900;
+    letter-spacing:4px;
     margin:10px 0;
+
+    background:linear-gradient(
+    90deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #00ffff,
+    #0000ff,
+    #8b00ff,
+    #ff0000);
+
+    background-size:500% auto;
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    animation:rainbowMove 4s linear infinite;
 }
 
-p{
-    color:#666;
+.godlinsta-tagline{
+    font-size:22px;
+    font-weight:bold;
+
+    background:linear-gradient(
+    90deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #00ffff,
+    #0000ff,
+    #8b00ff,
+    #ff0000);
+
+    background-size:500% auto;
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    animation:rainbowMove 4s linear infinite;
+}
+
+@keyframes rainbowMove{
+    0%{
+        background-position:0% 50%;
+    }
+    100%{
+        background-position:500% 50%;
+    }
 }
 </style>
 </head>
@@ -75,9 +125,11 @@ p{
 
 <img src="GODL LOGO.png" class="logo">
 
-<h1>GODLINSTA</h1>
+<h1 class="godlinsta-title">GODLINSTA</h1>
 
-<p>India's Future Social Media App</p>
+<p class="godlinsta-tagline">
+India's Future Social Media App
+</p>
 
 <input type="email" placeholder="Email">
 
@@ -93,3 +145,4 @@ p{
 
 </body>
 </html>
+```

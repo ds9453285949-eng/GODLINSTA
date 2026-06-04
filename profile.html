@@ -102,7 +102,13 @@ Share Profile
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+getFirestore,
+collection,
+query,
+where,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
@@ -119,31 +125,21 @@ const db = getFirestore(app);
 
 onAuthStateChanged(auth, async (user) => {
 
-if (!user) {
+if(!user){
 window.location.href = "login.html";
 return;
 }
 
-import {
-getDoc,
-doc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const userDoc = await getDoc(
-doc(db,"users",user.uid)
+const q = query(
+collection(db,"users"),
+where("email","==",user.email)
 );
 
-if(userDoc.exists()){
+const snap = await getDocs(q);
 
-const data = userDoc.data();
+if(!snap.empty){
 
-document.getElementById("username").innerText =
-data.username;
-
-document.getElementById("name").innerText =
-data.fullname;
-
-}
+const data = snap.docs[0].data();
 
 document.getElementById("username").innerText =
 data.username || "username";
@@ -161,8 +157,6 @@ window.onpopstate = function () {
 history.go(1);
 };
 
-</script>
-</script>
 </script>
 
 </body>

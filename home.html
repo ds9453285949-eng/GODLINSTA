@@ -81,11 +81,13 @@ display:none;
 
 <div>GODLINSTA</div>
 
-<div style="display:flex;gap:15px;">
+<div style="position:relative;"
+onclick="openNotifications()">
 
-<div style="position:relative;">
 ❤️
+
 <span id="notifDot"></span>
+
 </div>
 
 📩
@@ -117,7 +119,15 @@ if(localStorage.getItem("hasNotification")=="true"){
 document.getElementById("notifDot").style.display="block";
 }
 
-  
+  function openNotifications(){
+
+localStorage.setItem("hasNotification","false");
+
+document.getElementById("notifDot").style.display="none";
+
+location.href="notifications.html";
+
+}
 </script>
 </body>
 </html>

@@ -98,39 +98,54 @@ Share Profile
 
 </div>
 
-<script>
+<script type="module">
 
-document.getElementById("profileImage").src =
-localStorage.getItem("profilePic") || "GODL LOGO.png";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
+authDomain: "godlinsta.firebaseapp.com",
+projectId: "godlinsta",
+storageBucket: "godlinsta.firebasestorage.app",
+messagingSenderId: "808932933868",
+appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async(user)=>{
+
+if(!user){
+window.location.href="login.html";
+return;
+}
+
+const q = query(
+collection(db,"users"),
+where("email","==",user.email)
+);
+
+const snap = await getDocs(q);
+
+snap.forEach((doc)=>{
+
+const data = doc.data();
 
 document.getElementById("username").innerText =
-localStorage.getItem("username") || "username";
+data.username || "username";
 
 document.getElementById("name").innerText =
-localStorage.getItem("name") || "Your Name";
-
-document.getElementById("bio").innerText =
-localStorage.getItem("bio") || "No bio yet";
-
-document.getElementById("website").innerText =
-localStorage.getItem("website") || "";
-
-const posts = JSON.parse(localStorage.getItem("posts")) || [];
-
-document.getElementById("postsCount").innerText = posts.length;
-
-const postsGrid = document.getElementById("postsGrid");
-
-posts.forEach(post=>{
-
-const img=document.createElement("img");
-
-img.src=post.image;
-
-postsGrid.appendChild(img);
+data.fullname || "Your Name";
 
 });
 
+});
+
+</script>
 </script>
 
 </body>

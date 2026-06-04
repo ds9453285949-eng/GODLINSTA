@@ -124,16 +124,26 @@ window.location.href = "login.html";
 return;
 }
 
-const q = query(
-collection(db, "users"),
-where("email", "==", user.email)
+import {
+getDoc,
+doc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const userDoc = await getDoc(
+doc(db,"users",user.uid)
 );
 
-const snap = await getDocs(q);
+if(userDoc.exists()){
 
-if (!snap.empty) {
+const data = userDoc.data();
 
-const data = snap.docs[0].data();
+document.getElementById("username").innerText =
+data.username;
+
+document.getElementById("name").innerText =
+data.fullname;
+
+}
 
 document.getElementById("username").innerText =
 data.username || "username";

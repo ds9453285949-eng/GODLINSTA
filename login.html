@@ -108,6 +108,16 @@ appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+onAuthStateChanged(auth, (user) => {
+
+if(user){
+window.location.replace("profile.html");
+}
+
+});
+
 document.getElementById("loginBtn").addEventListener("click", function(){
 
 const email = document.getElementById("email").value;

@@ -132,9 +132,22 @@ No Website
 Edit Profile
 </button>
 
+  <button class="btn" onclick="location.href='create-post.html'">
+➕ Create Post
+</button>
+
 <button class="btn logout" onclick="location.href='login.html'">
 Logout
 </button>
+
+  <h2 style="margin-top:30px;">Posts</h2>
+
+<div id="postsGrid" style="
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:4px;
+margin-top:10px;
+"></div>
 
 </div>
 
@@ -157,6 +170,26 @@ localStorage.getItem("website") || "No Website";
 
 document.getElementById("website").href =
 localStorage.getItem("website") || "#";
+
+  const posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+document.querySelector(".stat h3").innerText = posts.length;
+
+const postsGrid = document.getElementById("postsGrid");
+
+posts.forEach(post => {
+
+const img = document.createElement("img");
+
+img.src = post.image;
+
+img.style.width = "100%";
+img.style.aspectRatio = "1/1";
+img.style.objectFit = "cover";
+
+postsGrid.appendChild(img);
+
+});
 
 </script>
 

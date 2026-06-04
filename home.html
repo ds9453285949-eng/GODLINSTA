@@ -144,6 +144,40 @@ location.href="create-post.html";
 if(choice=="2"){
 location.href="reels-upload.html";
 }
+
+    function openNotifications(){
+
+localStorage.setItem("hasNotification","false");
+
+document.getElementById("notifDot").style.display="none";
+
+location.href="notifications.html";
+
+}
+
+function openUploadMenu(){
+
+let choice = prompt(
+"1 = Story Upload\n2 = Post Upload\n3 = Reels Upload\n4 = Live"
+);
+
+if(choice=="1"){
+location.href="story-upload.html";
+}
+
+if(choice=="2"){
+location.href="create-post.html";
+}
+
+if(choice=="3"){
+location.href="reels-upload.html";
+}
+
+if(choice=="4"){
+alert("Live Feature Coming Soon");
+}
+
+}
   
 </script>
 </body>

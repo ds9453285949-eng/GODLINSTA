@@ -1,20 +1,150 @@
-Profile Picture Upload
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Profile - GODLINSTA</title>
 
-Name
+<style>
+body{
+background:black;
+color:white;
+font-family:Arial;
+margin:0;
+}
 
-Username
+.container{
+max-width:400px;
+margin:auto;
+padding:20px;
+}
 
-Bio
+h1{
+text-align:center;
+}
 
-Website Link
+input, textarea, select{
+width:100%;
+padding:12px;
+margin-top:10px;
+margin-bottom:15px;
+background:#111;
+color:white;
+border:1px solid #333;
+border-radius:10px;
+box-sizing:border-box;
+}
 
-Gender
+textarea{
+height:100px;
+}
 
-Category
+.btn{
+width:100%;
+padding:14px;
+background:#1877f2;
+color:white;
+border:none;
+border-radius:10px;
+font-size:18px;
+}
 
-Email
+.preview{
+width:100px;
+height:100px;
+border-radius:50%;
+display:block;
+margin:auto;
+object-fit:cover;
+border:2px solid #1877f2;
+}
+</style>
+</head>
 
-Phone Number
+<body>
 
-Save Changes Button
+<div class="container">
 
+<h1>Edit Profile</h1>
+
+<img src="GODL LOGO.png" id="preview" class="preview">
+
+<input type="file" id="profilePic">
+
+<input type="text" id="name" placeholder="Name">
+
+<input type="text" id="username" placeholder="Username">
+
+<textarea id="bio" placeholder="Bio"></textarea>
+
+<input type="url" id="website" placeholder="Website Link">
+
+<select id="gender">
+<option>Male</option>
+<option>Female</option>
+<option>Other</option>
+</select>
+
+<select id="category">
+<option>Artist</option>
+<option>Creator</option>
+<option>Business</option>
+<option>Gamer</option>
+<option>Student</option>
+</select>
+
+<input type="email" id="email" placeholder="Email">
+
+<input type="tel" id="phone" placeholder="Phone Number">
+
+<button class="btn" id="saveBtn">
+Save Changes
+</button>
+
+</div>
+
+<script>
+
+document.getElementById("profilePic").addEventListener("change", function(){
+
+const file = this.files[0];
+
+if(file){
+
+const reader = new FileReader();
+
+reader.onload = function(e){
+
+document.getElementById("preview").src = e.target.result;
+
+localStorage.setItem("profilePic", e.target.result);
+
+}
+
+reader.readAsDataURL(file);
+
+}
+
+});
+
+document.getElementById("saveBtn").addEventListener("click", function(){
+
+localStorage.setItem("name", document.getElementById("name").value);
+localStorage.setItem("username", document.getElementById("username").value);
+localStorage.setItem("bio", document.getElementById("bio").value);
+localStorage.setItem("website", document.getElementById("website").value);
+localStorage.setItem("gender", document.getElementById("gender").value);
+localStorage.setItem("category", document.getElementById("category").value);
+localStorage.setItem("email", document.getElementById("email").value);
+localStorage.setItem("phone", document.getElementById("phone").value);
+
+alert("Profile Saved Successfully!");
+
+window.location.href="profile.html";
+
+});
+
+</script>
+
+</body>
+</html>

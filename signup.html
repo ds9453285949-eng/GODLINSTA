@@ -172,17 +172,26 @@ email,
 password
 );
 
-await addDoc(
-collection(db,"users"),
-{
-fullname: fullname,
-username: username,
-email: email,
-followers: 0,
-following: 0,
-posts: 0
-}
+import {
+getDoc,
+doc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const userDoc = await getDoc(
+doc(db,"users",user.uid)
 );
+
+if(userDoc.exists()){
+
+const data = userDoc.data();
+
+document.getElementById("username").innerText =
+data.username;
+
+document.getElementById("name").innerText =
+data.fullname;
+
+}
 
 alert("Account Created Successfully");
 

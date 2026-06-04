@@ -91,10 +91,9 @@ Create New Account
 
 </div>
 
-  <script type="module">
+ <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -107,25 +106,20 @@ appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
 };
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
 
 document.getElementById("loginBtn").addEventListener("click", function(){
 
 const email = document.getElementById("email").value;
-
 const password = document.getElementById("password").value;
 
-signInWithEmailAndPassword(auth,email,password)
-
+signInWithEmailAndPassword(auth, email, password)
 .then(function(){
 
 alert("Login Successful");
-
-  window.location.href="profile.html";
+window.location.href = "profile.html";
 
 })
-
 .catch(function(error){
 
 alert(error.message);
@@ -134,8 +128,6 @@ alert(error.message);
 
 });
 
-</script
-  
 document.getElementById("forgotBtn").addEventListener("click", function(){
 
 const email = document.getElementById("email").value;
@@ -146,14 +138,20 @@ return;
 }
 
 sendPasswordResetEmail(auth, email)
-
 .then(function(){
-alert("Password reset email bhej diya gaya hai");
-})
 
+alert("Password reset email bhej diya gaya hai");
+
+})
 .catch(function(error){
+
 alert(error.message);
-}
+
+});
+
+});
+
+</script>
   
 </body>
 </html>

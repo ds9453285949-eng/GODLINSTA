@@ -121,31 +121,7 @@ if(localStorage.getItem("hasNotification")=="true"){
 document.getElementById("notifDot").style.display="block";
 }
 
-  function openNotifications(){
-
-localStorage.setItem("hasNotification","false");
-
-document.getElementById("notifDot").style.display="none";
-
-location.href="notifications.html";
-
-}
-
-  function openUploadMenu(){
-
-let choice = prompt(
-"1 = Post Upload\n2 = Reels Upload"
-);
-
-if(choice=="1"){
-location.href="create-post.html";
-}
-
-if(choice=="2"){
-location.href="reels-upload.html";
-}
-
-    function openNotifications(){
+function openNotifications(){
 
 localStorage.setItem("hasNotification","false");
 
@@ -176,7 +152,33 @@ location.href="reels-upload.html";
 if(choice=="4"){
 alert("Live Feature Coming Soon");
 }
-  
+
+}
+
+let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+const feed = document.getElementById("feed");
+
+posts.forEach(post => {
+
+feed.innerHTML += `
+
+<div class="post">
+
+<img src="${post.image}">
+
+<p>${post.caption}</p>
+
+<div class="actions">
+❤️ 💬 📤
+</div>
+
+</div>
+
+`;
+
+});
+
 </script>
 </body>
 </html>

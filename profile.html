@@ -142,13 +142,12 @@ if(!snap.empty){
 const data = snap.docs[0].data();
 
 document.getElementById("username").innerText =
-data.username || "username";
+data.username;
 
 document.getElementById("name").innerText =
-data.fullname || "Your Name";
+data.fullname;
 
 }
-
 });
 
 history.pushState(null, null, location.href);

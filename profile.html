@@ -11,7 +11,9 @@
 <body>
 
 <div class="topbar">
-<div>➕</div>
+<div onclick="openUploadMenu()" style="cursor:pointer;">
+➕
+</div>
 <div id="username"></div>
 <div>☰</div>
 </div>
@@ -154,9 +156,33 @@ history.pushState(null, "", location.href);
 window.onpopstate = function () {
 history.pushState(null, "", location.href);
 };
-  
-</script>
 
+function openUploadMenu(){
+
+let choice = prompt(
+"1 = Story Upload\n2 = Post Upload\n3 = Reels Upload\n4 = Live"
+);
+
+if(choice=="1"){
+location.href="story-upload.html";
+}
+
+if(choice=="2"){
+location.href="create-post.html";
+}
+
+if(choice=="3"){
+location.href="reels-upload.html";
+}
+
+if(choice=="4"){
+alert("Live Feature Coming Soon");
+}
+
+}
+
+</script>
+  
 </body>
 
 </body>

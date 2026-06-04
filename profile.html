@@ -10,65 +10,91 @@
 
 <body>
 
-<div class="container">
+<div class="topbar">
+<div>➕</div>
+<div id="username">username</div>
+<div>☰</div>
+</div>
+
+<div class="profile-header">
 
 <img id="profileImage" src="GODL LOGO.png" class="profile-pic">
 
-<div class="username" id="username">
-@username
-</div>
-
-<div class="name" id="name">
-Your Name
-</div>
-
-<div class="bio" id="bio">
-No bio yet
-</div>
-
-<a href="#" id="website" class="link">
-No Website
-</a>
-
 <div class="stats">
 
-<div class="stat">
-<h3>0</h3>
+<div>
+<h3 id="postsCount">0</h3>
 <p>Posts</p>
 </div>
 
-<div class="stat">
+<div>
 <h3>0</h3>
 <p>Followers</p>
 </div>
 
-<div class="stat">
+<div>
 <h3>0</h3>
 <p>Following</p>
 </div>
 
 </div>
 
-<button class="btn" onclick="location.href='edit-profile.html'">
+</div>
+
+<div class="profile-info">
+
+<h3 id="name">Your Name</h3>
+
+<div id="bio">No bio yet</div>
+
+<a id="website" style="color:#4f5dff"></a>
+
+</div>
+
+<div class="profile-buttons">
+
+<button onclick="location.href='edit-profile.html'">
 Edit Profile
 </button>
 
-  <button class="btn" onclick="location.href='create-post.html'">
-➕ Create Post
+<button>
+Share Profile
 </button>
 
-<button class="btn logout" onclick="location.href='login.html'">
-Logout
-</button>
+</div>
 
-  <h2 style="margin-top:30px;">Posts</h2>
+<div class="highlights">
 
-<div id="postsGrid" style="
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:4px;
-margin-top:10px;
-"></div>
+<div class="highlight">
+<div class="highlight-circle">+</div>
+<div>New</div>
+</div>
+
+</div>
+
+<div class="tabs">
+
+<div>▦</div>
+
+<div>🎞</div>
+
+<div>👤</div>
+
+</div>
+
+<div id="postsGrid" class="posts-grid"></div>
+
+<div class="bottom-nav">
+
+<div>🏠</div>
+
+<div onclick="location.href='create-post.html'">🎬</div>
+
+<div>➕</div>
+
+<div>🔍</div>
+
+<div>👤</div>
 
 </div>
 
@@ -78,7 +104,7 @@ document.getElementById("profileImage").src =
 localStorage.getItem("profilePic") || "GODL LOGO.png";
 
 document.getElementById("username").innerText =
-localStorage.getItem("username") || "@username";
+localStorage.getItem("username") || "username";
 
 document.getElementById("name").innerText =
 localStorage.getItem("name") || "Your Name";
@@ -87,32 +113,27 @@ document.getElementById("bio").innerText =
 localStorage.getItem("bio") || "No bio yet";
 
 document.getElementById("website").innerText =
-localStorage.getItem("website") || "No Website";
+localStorage.getItem("website") || "";
 
-document.getElementById("website").href =
-localStorage.getItem("website") || "#";
+const posts = JSON.parse(localStorage.getItem("posts")) || [];
 
-  const posts = JSON.parse(localStorage.getItem("posts")) || [];
-
-document.querySelector(".stat h3").innerText = posts.length;
+document.getElementById("postsCount").innerText = posts.length;
 
 const postsGrid = document.getElementById("postsGrid");
 
-posts.forEach(post => {
+posts.forEach(post=>{
 
-const img = document.createElement("img");
+const img=document.createElement("img");
 
-img.src = post.image;
-
-img.style.width = "100%";
-img.style.aspectRatio = "1/1";
-img.style.objectFit = "cover";
+img.src=post.image;
 
 postsGrid.appendChild(img);
 
 });
 
 </script>
+
+</body>
 
 </body>
 </html>

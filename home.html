@@ -119,7 +119,9 @@ onclick="openNotifications()">
 ❤️
 
 <span id="notifDot"></span>
-
+  
+</div>
+  
 </div>
   
 <div class="stories">
@@ -214,20 +216,38 @@ feed.innerHTML += `
 
 <div class="post">
 
-<h4>Dheeraj Sharma</h4>
+<div style="
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:10px;
+">
+
+<img src="GODL LOGO.png"
+style="
+width:35px;
+height:35px;
+border-radius:50%;
+">
+
+<b>godl_shivaaaaa</b>
+
+</div>
 
 <img src="${post.image}">
 
 <div class="actions">
-❤️ 💬 📤
+❤️ 💬 📤 🔖
 </div>
 
-<p>${post.caption}</p>
+<p>
+<b>godl_shivaaaaa</b>
+${post.caption}
+</p>
 
 </div>
 
 `;
-
 });
 
 </script>

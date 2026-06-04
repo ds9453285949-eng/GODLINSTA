@@ -117,7 +117,7 @@ signInWithEmailAndPassword(auth, email, password)
 .then(function(){
 
 alert("Login Successful");
-window.location.href = "profile.html";
+window.location.replace("profile.html");
 
 })
 .catch(function(error){

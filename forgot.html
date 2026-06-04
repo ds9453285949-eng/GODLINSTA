@@ -60,5 +60,45 @@ Send Reset Link
 
 </div>
 
+  <script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
+  authDomain: "godlinsta.firebaseapp.com",
+  projectId: "godlinsta",
+  storageBucket: "godlinsta.firebasestorage.app",
+  messagingSenderId: "808932933868",
+  appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+document.getElementById("resetBtn").addEventListener("click", function(){
+
+  const email = document.getElementById("email").value;
+
+  if(!email){
+    alert("Email dalo");
+    return;
+  }
+
+  sendPasswordResetEmail(auth, email)
+
+  .then(function(){
+    alert("Password reset email bhej diya gaya hai");
+  })
+
+  .catch(function(error){
+    alert(error.message);
+  });
+
+});
+
+</script>
+
 </body>
 </html>

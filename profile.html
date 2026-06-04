@@ -150,30 +150,12 @@ data.fullname;
 }
 });
 
-history.pushState(null, null, location.href);
-
-window.onpopstate = function () {
-history.go(1);
-};
-
-  history.pushState(null, null, location.href);
-
-window.addEventListener("popstate", function () {
-history.pushState(null, null, location.href);
-});
-
-  history.pushState(null, null, location.href);
-
-window.addEventListener("popstate", function () {
-history.pushState(null, null, location.href);
-});
-
-  history.pushState(null, "", location.href);
+history.pushState(null, "", location.href);
 
 window.onpopstate = function () {
 history.pushState(null, "", location.href);
 };
-
+  
 </script>
 
 </body>

@@ -141,6 +141,12 @@ data.username || "username";
 document.getElementById("name").innerText =
 data.fullname || "Your Name";
 
+  history.pushState(null, null, location.href);
+
+window.onpopstate = function () {
+  history.go(1);
+  
+
 });
 
 });

@@ -168,6 +168,12 @@ window.addEventListener("popstate", function () {
 history.pushState(null, null, location.href);
 });
 
+  history.pushState(null, "", location.href);
+
+window.onpopstate = function () {
+history.pushState(null, "", location.href);
+};
+
 </script>
 
 </body>

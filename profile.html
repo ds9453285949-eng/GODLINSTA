@@ -82,6 +82,14 @@ Share Profile
 
 <div>👤</div>
 
+</div>
+
+<div class="bottom-nav">
+  
+</div>
+
+<div id="profilePosts" class="profile-posts"></div>
+
 <div class="bottom-nav">
 
 <div onclick="location.href='home.html'">🏠</div>
@@ -180,6 +188,20 @@ alert("Live Feature Coming Soon");
 }
 
 }
+
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+const profilePosts = document.getElementById("profilePosts");
+
+posts.forEach(post => {
+
+profilePosts.innerHTML += `
+<img src="${post.image}">
+`;
+
+});
+
+document.getElementById("postsCount").innerText = posts.length;
 
 </script>
   

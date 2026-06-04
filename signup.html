@@ -90,7 +90,7 @@ Back To Login
 
 </div>
 
- <script type="module">
+<script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
@@ -123,28 +123,17 @@ const db = getFirestore(app);
 
 document.getElementById("signupBtn").addEventListener("click", async () => {
 
-  alert("Signup button clicked");
+const fullname = document.getElementById("fullname").value.trim();
 
-const fullname =
-document.getElementById("fullname").value.trim();
-
-let username =
-document.getElementById("username").value
+const username = document.getElementById("username").value
 .toLowerCase()
 .trim();
 
-const email =
-document.getElementById("email").value.trim();
+const email = document.getElementById("email").value.trim();
 
-const password =
-document.getElementById("password").value;
+const password = document.getElementById("password").value;
 
-if(
-fullname === "" ||
-username === "" ||
-email === "" ||
-password === ""
-){
+if(fullname === "" || username === "" || email === "" || password === ""){
 alert("Fill all fields");
 return;
 }
@@ -166,7 +155,7 @@ alert("Username already taken");
 return;
 }
 
-try{
+try {
 
 await createUserWithEmailAndPassword(
 auth,
@@ -174,40 +163,30 @@ email,
 password
 );
 
-import {
-getDoc,
-doc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const userDoc = await getDoc(
-doc(db,"users",user.uid)
-);
-
-if(userDoc.exists()){
-
-const data = userDoc.data();
-
-document.getElementById("username").innerText =
-data.username;
-
-document.getElementById("name").innerText =
-data.fullname;
-
+await addDoc(
+collection(db,"users"),
+{
+fullname: fullname,
+username: username,
+email: email,
+followers: 0,
+following: 0,
+posts: 0
 }
+);
 
 alert("Account Created Successfully");
 
 window.location.href = "login.html";
 
-}catch(error){
+} catch(error) {
 
 alert(error.message);
 
 }
 
 });
-
-</script>
+  
 </script>
 
 </body>

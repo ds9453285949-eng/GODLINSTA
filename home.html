@@ -125,6 +125,12 @@ if(localStorage.getItem("hasNotification")=="true"){
 document.getElementById("notifDot").style.display="block";
 }
 
+localStorage.setItem("hasNotification","true");
+
+if(localStorage.getItem("hasNotification")=="true"){
+document.getElementById("notifDot").style.display="block";
+}
+  
 </script>
 </body>
 </html>

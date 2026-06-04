@@ -129,6 +129,44 @@ window.location.href = "profile.html";
 
 });
 
+  if(localStorage.getItem("hasNotification")=="true"){
+document.getElementById("notifDot").style.display="block";
+}
+
+function openNotifications(){
+
+localStorage.setItem("hasNotification","false");
+
+document.getElementById("notifDot").style.display="none";
+
+location.href="notifications.html";
+
+}
+
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+const feed = document.getElementById("feed");
+
+posts.forEach(post => {
+
+feed.innerHTML += `
+
+<div class="post">
+
+<img src="${post.image}">
+
+<p>${post.caption}</p>
+
+<div class="actions">
+❤️ 💬 📤
+</div>
+
+</div>
+
+`;
+
+});
+
 </script>
 
 </body>

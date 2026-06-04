@@ -61,6 +61,17 @@ border-top:1px solid #222;
 font-size:24px;
 }
 
+  #notifDot{
+width:10px;
+height:10px;
+background:#0095f6;
+border-radius:50%;
+position:absolute;
+top:0;
+right:-3px;
+display:none;
+}
+  
 </style>
 </head>
 
@@ -70,8 +81,15 @@ font-size:24px;
 
 <div>GODLINSTA</div>
 
-<div>
-❤️ 📩
+<div style="display:flex;gap:15px;">
+
+<div style="position:relative;">
+❤️
+<span id="notifDot"></span>
+</div>
+
+📩
+
 </div>
 
 </div>
@@ -101,6 +119,12 @@ font-size:24px;
 <div onclick="location.href='profile.html'">👤</div>
 
 </div>
+<script>
 
+if(localStorage.getItem("hasNotification")=="true"){
+document.getElementById("notifDot").style.display="block";
+}
+
+</script>
 </body>
 </html>

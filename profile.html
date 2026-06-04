@@ -6,26 +6,84 @@
 <title>GODLINSTA Profile</title>
 
 <style>
+
 body{
 background:black;
 color:white;
-font-family:Arial;
-text-align:center;
+font-family:Arial,sans-serif;
 margin:0;
 }
 
 .container{
-padding:30px;
+max-width:500px;
+margin:auto;
+padding:20px;
+}
+
+.profile-pic{
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid #1877f2;
+display:block;
+margin:auto;
+}
+
+.username{
+font-size:24px;
+font-weight:bold;
+margin-top:15px;
+}
+
+.name{
+font-size:18px;
+margin-top:5px;
+}
+
+.bio{
+margin-top:10px;
+color:#ccc;
+}
+
+.link{
+color:#4f5dff;
+text-decoration:none;
+display:block;
+margin-top:8px;
+}
+
+.stats{
+display:flex;
+justify-content:space-around;
+margin-top:25px;
+text-align:center;
+}
+
+.stat h3{
+margin:0;
+}
+
+.stat p{
+margin:5px 0;
 }
 
 .btn{
-padding:12px 25px;
-background:#1877f2;
-color:white;
+width:100%;
+padding:14px;
 border:none;
 border-radius:10px;
-font-size:16px;
+background:#1877f2;
+color:white;
+font-size:18px;
+margin-top:15px;
+cursor:pointer;
 }
+
+.logout{
+background:#333;
+}
+
 </style>
 </head>
 
@@ -33,21 +91,74 @@ font-size:16px;
 
 <div class="container">
 
-<img src="GODL LOGO.png" width="100">
+<img id="profileImage" src="GODL LOGO.png" class="profile-pic">
 
-<h1>Welcome To GODLINSTA</h1>
+<div class="username" id="username">
+@username
+</div>
 
-<p>Profile Page Working Successfully ✅</p>
+<div class="name" id="name">
+Your Name
+</div>
 
-<p>Posts: 0</p>
-<p>Followers: 0</p>
-<p>Following: 0</p>
+<div class="bio" id="bio">
+No bio yet
+</div>
 
-<button class="btn" onclick="location.href='login.html'">
+<a href="#" id="website" class="link">
+No Website
+</a>
+
+<div class="stats">
+
+<div class="stat">
+<h3>0</h3>
+<p>Posts</p>
+</div>
+
+<div class="stat">
+<h3>0</h3>
+<p>Followers</p>
+</div>
+
+<div class="stat">
+<h3>0</h3>
+<p>Following</p>
+</div>
+
+</div>
+
+<button class="btn" onclick="location.href='edit-profile.html'">
+Edit Profile
+</button>
+
+<button class="btn logout" onclick="location.href='login.html'">
 Logout
 </button>
 
 </div>
+
+<script>
+
+document.getElementById("profileImage").src =
+localStorage.getItem("profilePic") || "GODL LOGO.png";
+
+document.getElementById("username").innerText =
+localStorage.getItem("username") || "@username";
+
+document.getElementById("name").innerText =
+localStorage.getItem("name") || "Your Name";
+
+document.getElementById("bio").innerText =
+localStorage.getItem("bio") || "No bio yet";
+
+document.getElementById("website").innerText =
+localStorage.getItem("website") || "No Website";
+
+document.getElementById("website").href =
+localStorage.getItem("website") || "#";
+
+</script>
 
 </body>
 </html>

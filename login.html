@@ -94,8 +94,14 @@ Create New Account
  <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+   
+import {
+getAuth,
+signInWithEmailAndPassword,
+sendPasswordResetEmail,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+   
 const firebaseConfig = {
 apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
 authDomain: "godlinsta.firebaseapp.com",
@@ -107,8 +113,6 @@ appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
-   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 onAuthStateChanged(auth, (user) => {
 

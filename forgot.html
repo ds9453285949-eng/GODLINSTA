@@ -1,104 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forgot Password</title>
-
-<style>
-body{
-background:black;
-color:white;
-font-family:Arial;
-text-align:center;
-margin:0;
-}
-
-.container{
-max-width:320px;
-margin:auto;
-padding:20px;
-}
-
-input{
-width:100%;
-padding:15px;
-margin:8px 0;
-background:#111;
-color:white;
-border:1px solid #333;
-border-radius:10px;
-box-sizing:border-box;
-}
-
-.btn{
-width:100%;
-padding:14px;
-background:#1877f2;
-color:white;
-border:none;
-border-radius:10px;
-font-size:18px;
-margin-top:10px;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Forgot Password</title>
+    <style>
+        body { background: #000; color: #fff; font-family: sans-serif; text-align: center; padding: 50px 20px; }
+        .container { max-width: 320px; margin: auto; }
+        input { width: 100%; padding: 14px; margin: 15px 0; background: #121212; color: #fff; border: 1px solid #333; border-radius: 6px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; background: #0095f6; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
+    </style>
 </head>
-
 <body>
-
 <div class="container">
-
-<img src="GODL LOGO.png" width="90">
-
-<h1>Forgot Password</h1>
-
-<input type="email" id="email" placeholder="Enter Your Email">
-
-<button class="btn" id="resetBtn">
-Send Reset Link
-</button>
-
+    <h2>Trouble logging in?</h2>
+    <input type="text" id="resetInput" placeholder="Email or Username">
+    <button class="btn" id="resetBtn">Send Reset Link</button>
+    <a href="login.html" style="color:white; display:block; margin-top:20px;">Back to Login</a>
 </div>
 
-  <script type="module">
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    const firebaseConfig = { apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM", authDomain: "godlinsta.firebaseapp.com", projectId: "godlinsta", storageBucket: "godlinsta.firebasestorage.app", messagingSenderId: "808932933868", appId: "1:808932933868:web:098b5e9cb0fd4e856065c9" };
+    const auth = getAuth(initializeApp(firebaseConfig));
+    const db = getFirestore();
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
-  authDomain: "godlinsta.firebaseapp.com",
-  projectId: "godlinsta",
-  storageBucket: "godlinsta.firebasestorage.app",
-  messagingSenderId: "808932933868",
-  appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-document.getElementById("resetBtn").addEventListener("click", function(){
-
-  const email = document.getElementById("email").value;
-
-  if(!email){
-    alert("Email dalo");
-    return;
-  }
-
-  sendPasswordResetEmail(auth, email)
-
-  .then(function(){
-    alert("Password reset email bhej diya gaya hai");
-  })
-
-  .catch(function(error){
-    alert(error.message);
-  });
-
-});
-
+    document.getElementById("resetBtn").addEventListener("click", async () => {
+        const input = document.getElementById("resetInput").value.trim();
+        const btn = document.getElementById("resetBtn");
+        btn.disabled = true; btn.innerText = "Processing...";
+        try {
+            let email = input;
+            if(!input.includes("@")) {
+                const snap = await getDocs(query(collection(db, "users"), where("username", "==", input)));
+                if(snap.empty) throw new Error("User not found!");
+                email = snap.docs[0].data().email;
+            }
+            await sendPasswordResetEmail(auth, email);
+            alert("Reset link sent!"); window.location.href = "login.html";
+        } catch(e) { alert(e.message); btn.disabled = false; btn.innerText = "Send Reset Link"; }
+    });
 </script>
-
 </body>
 </html>

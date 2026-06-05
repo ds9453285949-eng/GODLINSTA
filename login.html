@@ -131,15 +131,16 @@ window.location.replace("profile.html");
 
 });
 
-document.getElementById("loginBtn").addEventListener("click", function(){
+document.getElementById("loginBtn").addEventListener("click", async function(){
 
 const email = document.getElementById("email").value;
 const password = document.getElementById("password").value;
 
-signInWithEmailAndPassword(auth, email, password)
-.then(function(){
+try{
 
-  const q = query(
+await signInWithEmailAndPassword(auth,email,password);
+
+const q = query(
 collection(db,"users"),
 where("email","==",email)
 );
@@ -157,58 +158,18 @@ data.username
 
 }
 
-  const q = query(
-collection(db,"users"),
-where("email","==",email)
-);
-
-const snap = await getDocs(q);
-
-if(!snap.empty){
-
-const data = snap.docs[0].data();
-
-localStorage.setItem(
-"currentUsername",
-data.username
-);
-
-}
-  
 alert("Login Successful");
+
 window.location.replace("profile.html");
 
-})
-.catch(function(error){
+}catch(error){
 
 alert(error.message);
 
-});
-
-});
-
-document.getElementById("forgotBtn").addEventListener("click", function(){
-
-const email = document.getElementById("email").value;
-
-if(!email){
-alert("Pehle Email dalo");
-return;
 }
 
-sendPasswordResetEmail(auth, email)
-.then(async function(){
-
-alert("Password reset email bhej diya gaya hai");
-
-})
-.catch(function(error){
-
-alert(error.message);
-
 });
-
-});
+   
 
 </script>
   

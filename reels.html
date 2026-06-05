@@ -1,25 +1,33 @@
 <!DOCTYPE html>
 <html>
-<body style="background:black;color:white;">
-<h1>Coming Soon</h1>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body{margin:0; background:#000; overflow:hidden;}
+        #reelsContainer{height:100vh; overflow-y:scroll; scroll-snap-type:y mandatory;}
+        .reel-card{height:100vh; scroll-snap-align:start; position:relative; display:flex; align-items:center;}
+        video{height:100%; width:100%; object-fit:cover;}
+        .ui{position:absolute; bottom:30px; left:20px; color:#fff; font-weight:bold; text-shadow:1px 1px 2px #000;}
+    </style>
+</head>
+<body>
+    <div id="reelsContainer"></div>
+
+    <script type="module">
+        import { db, collection, query, orderBy, onSnapshot } from "./firebase-config.js";
+        const c = document.getElementById("reelsContainer");
+        
+        onSnapshot(query(collection(db, "reels"), orderBy("createdat", "desc")), (snap) => {
+            c.innerHTML = "";
+            snap.forEach(doc => {
+                const d = doc.data();
+                c.innerHTML += `
+                    <div class="reel-card">
+                        <video src="${d.videourl}?f_auto=auto&q_auto=best" loop autoplay playsinline muted></video>
+                        <div class="ui">${d.caption || ""}</div>
+                    </div>`;
+            });
+        });
+    </script>
 </body>
 </html>
-
-
-<h1 style="color:white;text-align:center;">
-Reels Page
-</h1>
-
-<div class="bottom-nav">
-
-<div onclick="location.href='home.html'">🏠</div>
-
-<div onclick="location.href='reels.html'">🎬</div>
-
-<div onclick="location.href='messages.html'">📩</div>
-
-<div onclick="location.href='search.html'">🔍</div>
-
-<div onclick="location.href='profile.html'">👤</div>
-
-</div>

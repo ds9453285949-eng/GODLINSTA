@@ -177,7 +177,15 @@ border:2px solid black;
 <div onclick="location.href='profile.html'">👤</div>
 
 </div>
-<script>
+<script type="module">
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 if(localStorage.getItem("hasNotification")=="true"){
 document.getElementById("notifDot").style.display="block";

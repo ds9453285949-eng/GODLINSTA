@@ -3,48 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - GODLINSTA</title>
+    <title>Profile • GODLINSTA</title>
     <style>
         body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; padding-bottom:70px; }
-        .topbar { display:flex; justify-content:space-between; align-items:center; padding:15px; border-bottom:1px solid #1a1a1a; }
+        .topbar { display:flex; justify-content:space-between; align-items:center; padding:15px; border-bottom:1px solid #1a1a1a; position:sticky; top:0; background:#000; z-index:1000; }
         
-        /* Profile Header */
-        .profile-header { display:flex; align-items:center; padding:20px; gap:20px; }
-        .profile-pic { width:85px; height:85px; border-radius:50%; background:#333; object-fit:cover; }
-        .stats { display:flex; gap:20px; text-align:center; }
+        .profile-header { display:flex; align-items:center; padding:20px; gap:25px; }
+        .profile-pic { width:85px; height:85px; border-radius:50%; background:#222; object-fit:cover; border:1px solid #333; }
+        .stats { display:flex; gap:20px; text-align:center; flex:1; justify-content: space-around; }
+        .stats h3 { margin:0; font-size:16px; }
+        .stats p { margin:0; font-size:12px; color:#aaa; }
         
-        /* Info & Buttons */
-        .profile-info { padding:0 20px 10px; }
+        .profile-info { padding:0 20px 15px; }
         .profile-buttons { display:flex; padding:0 20px 20px; gap:8px; }
-        .profile-buttons button { background:#1a1a1a; border:none; color:white; padding:8px; border-radius:8px; font-weight:600; cursor:pointer; flex:1; font-size:14px; }
+        .profile-buttons button { background:#1a1a1a; border:none; color:white; padding:8px; border-radius:8px; font-weight:600; cursor:pointer; flex:1; font-size:13px; }
         
-        /* Grid */
         .profile-posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-        .profile-posts img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background:#111; }
+        .profile-posts img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background:#111; cursor:pointer; }
         
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #1a1a1a; z-index:1000; }
+        .nav-icon { font-size:24px; cursor:pointer; }
     </style>
 </head>
 <body>
 
 <div class="topbar">
-    <div style="cursor:pointer;" onclick="location.href='create.html'">➕</div>
-    <div id="username" style="font-weight:bold;">Loading...</div>
-    <div>☰</div>
+    <div class="nav-icon" onclick="location.href='create.html'">➕</div>
+    <div id="username" style="font-weight:bold; font-size:18px;">Loading...</div>
+    <div class="nav-icon">☰</div>
 </div>
 
 <div class="profile-header">
     <img id="profileImage" src="https://ui-avatars.com/api/?name=User" class="profile-pic">
     <div class="stats">
-        <div><h3 id="postsCount">0</h3><p style="font-size:12px;color:#aaa;">Posts</p></div>
-        <div><h3>0</h3><p style="font-size:12px;color:#aaa;">Followers</p></div>
-        <div><h3>0</h3><p style="font-size:12px;color:#aaa;">Following</p></div>
+        <div><h3 id="postsCount">0</h3><p>Posts</p></div>
+        <div><h3>0</h3><p>Followers</p></div>
+        <div><h3>0</h3><p>Following</p></div>
     </div>
 </div>
 
 <div class="profile-info">
-    <h3 id="name" style="margin:0;"></h3>
-    <div id="bio" style="font-size:14px; color:#ddd; margin-top:5px;"></div>
+    <h3 id="name" style="margin:0; font-size:15px;"></h3>
+    <div id="bio" style="font-size:13px; color:#ddd; margin-top:3px;"></div>
 </div>
 
 <div class="profile-buttons">
@@ -55,15 +55,15 @@
 <div id="profilePosts" class="profile-posts"></div>
 
 <nav class="bottom-nav">
-    <div onclick="location.href='home.html'">🏠</div>
-    <div onclick="location.href='search.html'">🔍</div>
-    <div onclick="location.href='create.html'">➕</div>
-    <div onclick="location.href='reels.html'">🎬</div>
-    <div onclick="location.href='profile.html'">👤</div>
+    <div class="nav-icon" onclick="location.href='home.html'">🏠</div>
+    <div class="nav-icon" onclick="location.href='search.html'">🔍</div>
+    <div class="nav-icon" onclick="location.href='create.html'">➕</div>
+    <div class="nav-icon" onclick="location.href='reels.html'">🎬</div>
+    <div class="nav-icon" onclick="location.href='profile.html'">👤</div>
 </nav>
 
 <script type="module">
-    import { auth, db, collection, query, where, getDocs } from "./firebase-config.js";
+    import { auth, db, collection, query, where, getDocs, orderBy } from "./firebase-config.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     onAuthStateChanged(auth, async (user) => {
@@ -77,7 +77,8 @@
             document.getElementById("bio").innerText = data.bio || "";
             if(data.profilePic) document.getElementById("profileImage").src = data.profilePic;
 
-            const postsSnap = await getDocs(query(collection(db,"posts"), where("username","==",data.username)));
+            // Fetch User Posts
+            const postsSnap = await getDocs(query(collection(db,"posts"), where("username","==",data.username), orderBy("createdAt", "desc")));
             const profilePosts = document.getElementById("profilePosts");
             
             profilePosts.innerHTML = "";

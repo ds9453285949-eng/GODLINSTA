@@ -194,10 +194,12 @@ history.pushState(null, "", location.href);
 
 function openUploadMenu(){
 
-let choice = prompt(
-"1 = Story Upload\n2 = Post Upload\n3 = Reels Upload\n4 = Live"
-);
+location.href = "create.html";
 
+}
+
+window.openUploadMenu = openUploadMenu;
+  
 if(choice=="1"){
 location.href="story-upload.html";
 }

@@ -101,6 +101,14 @@ signInWithEmailAndPassword,
 sendPasswordResetEmail,
 onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+   import {
+getFirestore,
+collection,
+query,
+where,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
    
 const firebaseConfig = {
 apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
@@ -113,6 +121,7 @@ appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 onAuthStateChanged(auth, (user) => {
 
@@ -130,6 +139,42 @@ const password = document.getElementById("password").value;
 signInWithEmailAndPassword(auth, email, password)
 .then(function(){
 
+  const q = query(
+collection(db,"users"),
+where("email","==",email)
+);
+
+const snap = await getDocs(q);
+
+if(!snap.empty){
+
+const data = snap.docs[0].data();
+
+localStorage.setItem(
+"currentUsername",
+data.username
+);
+
+}
+
+  const q = query(
+collection(db,"users"),
+where("email","==",email)
+);
+
+const snap = await getDocs(q);
+
+if(!snap.empty){
+
+const data = snap.docs[0].data();
+
+localStorage.setItem(
+"currentUsername",
+data.username
+);
+
+}
+  
 alert("Login Successful");
 window.location.replace("profile.html");
 
@@ -152,7 +197,7 @@ return;
 }
 
 sendPasswordResetEmail(auth, email)
-.then(function(){
+.then(async function(){
 
 alert("Password reset email bhej diya gaya hai");
 

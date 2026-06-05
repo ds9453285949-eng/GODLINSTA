@@ -1,15 +1,6 @@
-// firebase-config.js (Updated Final Version)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  serverTimestamp,
-  query,
-  orderBy,
-  onSnapshot 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
@@ -21,18 +12,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Exporting everything needed for Reels and Chat
-export { 
-  auth, 
-  db, 
-  collection, 
-  addDoc, 
-  serverTimestamp, 
-  query, 
-  orderBy, 
-  onSnapshot 
-};
+export { auth, db, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot };

@@ -1,150 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Edit Profile - GODLINSTA</title>
-
-<style>
-body{
-background:black;
-color:white;
-font-family:Arial;
-margin:0;
-}
-
-.container{
-max-width:400px;
-margin:auto;
-padding:20px;
-}
-
-h1{
-text-align:center;
-}
-
-input, textarea, select{
-width:100%;
-padding:12px;
-margin-top:10px;
-margin-bottom:15px;
-background:#111;
-color:white;
-border:1px solid #333;
-border-radius:10px;
-box-sizing:border-box;
-}
-
-textarea{
-height:100px;
-}
-
-.btn{
-width:100%;
-padding:14px;
-background:#1877f2;
-color:white;
-border:none;
-border-radius:10px;
-font-size:18px;
-}
-
-.preview{
-width:100px;
-height:100px;
-border-radius:50%;
-display:block;
-margin:auto;
-object-fit:cover;
-border:2px solid #1877f2;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Edit Profile - GODLINSTA</title>
+    <style>
+        body { background: black; color: white; font-family: Arial; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; background: #111; color: white; border: 1px solid #333; border-radius: 8px; }
+        .btn { width: 100%; padding: 12px; background: #0095f6; border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    </style>
 </head>
-
 <body>
 
 <div class="container">
-
-<h1>Edit Profile</h1>
-
-<img src="GODL LOGO.png" id="preview" class="preview">
-
-<input type="file" id="profilePic">
-
-<input type="text" id="name" placeholder="Name">
-
-<input type="text" id="username" placeholder="Username">
-
-<textarea id="bio" placeholder="Bio"></textarea>
-
-<input type="url" id="website" placeholder="Website Link">
-
-<select id="gender">
-<option>Male</option>
-<option>Female</option>
-<option>Other</option>
-</select>
-
-<select id="category">
-<option>Artist</option>
-<option>Creator</option>
-<option>Business</option>
-<option>Gamer</option>
-<option>Student</option>
-</select>
-
-<input type="email" id="email" placeholder="Email">
-
-<input type="tel" id="phone" placeholder="Phone Number">
-
-<button class="btn" id="saveBtn">
-Save Changes
-</button>
-
+    <img id="profilePic" src="https://via.placeholder.com/150" style="width:100px; border-radius:50%">
+    <input type="file" id="picUpload">
+    
+    <input type="text" id="editName" placeholder="Name">
+    <input type="text" id="editUsername" placeholder="Username">
+    <textarea id="editBio" placeholder="Bio"></textarea>
+    <input type="text" id="editPronouns" placeholder="Pronouns">
+    <select id="editGender"><option value="">Gender</option><option value="male">Male</option><option value="female">Female</option></select>
+    <input type="text" id="editCategory" placeholder="Category (e.g. Artist)">
+    <input type="text" id="editMusic" placeholder="Profile Music Name">
+    <label><input type="checkbox" id="aiLabel"> AI Creator Label</label>
+    
+    <button class="btn" id="saveBtn">Save Profile</button>
 </div>
 
-<script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-document.getElementById("profilePic").addEventListener("change", function(){
+    const firebaseConfig = { /* Apna Config Yahan Rakhein */ };
+    initializeApp(firebaseConfig);
+    const auth = getAuth(); const db = getFirestore(); const storage = getStorage();
 
-const file = this.files[0];
+    let userDocRef, oldUsername, editCount, lastChanged;
 
-if(file){
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) { window.location.href = "login.html"; return; }
+        const snap = await getDocs(query(collection(db, "users"), where("email", "==", user.email)));
+        if (!snap.empty) {
+            const d = snap.docs[0].data();
+            userDocRef = snap.docs[0].ref;
+            document.getElementById("editName").value = d.fullname || "";
+            document.getElementById("editUsername").value = d.username || "";
+            document.getElementById("editBio").value = d.bio || "";
+            document.getElementById("editPronouns").value = d.pronouns || "";
+            document.getElementById("editGender").value = d.gender || "";
+            document.getElementById("editCategory").value = d.category || "";
+            document.getElementById("editMusic").value = d.music || "";
+            document.getElementById("aiLabel").checked = d.aiLabel || false;
+            if(d.profilePic) document.getElementById("profilePic").src = d.profilePic;
+            oldUsername = d.username;
+            editCount = d.editCount || 0;
+            lastChanged = d.lastChanged ? d.lastChanged.toDate() : null;
+        }
+    });
 
-const reader = new FileReader();
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+        const newName = document.getElementById("editName").value.trim();
+        const newUsername = document.getElementById("editUsername").value.toLowerCase().trim();
+        const today = new Date();
+        const fifteenDays = 15 * 24 * 60 * 60 * 1000;
 
-reader.onload = function(e){
+        if (newName !== document.getElementById("editName").value && editCount >= 2 && lastChanged && (today - lastChanged < fifteenDays)) {
+            alert("15 din mein sirf 2 baar naam badal sakte hain!"); return;
+        }
 
-document.getElementById("preview").src = e.target.result;
-
-localStorage.setItem("profilePic", e.target.result);
-
-}
-
-reader.readAsDataURL(file);
-
-}
-
-});
-
-document.getElementById("saveBtn").addEventListener("click", function(){
-
-localStorage.setItem("name", document.getElementById("name").value);
-localStorage.setItem("username", document.getElementById("username").value);
-localStorage.setItem("bio", document.getElementById("bio").value);
-localStorage.setItem("website", document.getElementById("website").value);
-localStorage.setItem("gender", document.getElementById("gender").value);
-localStorage.setItem("category", document.getElementById("category").value);
-localStorage.setItem("email", document.getElementById("email").value);
-localStorage.setItem("phone", document.getElementById("phone").value);
-
-alert("Profile Saved Successfully!");
-
-window.location.href="profile.html";
-
-});
-
+        const btn = document.getElementById("saveBtn"); btn.innerText = "Saving...";
+        try {
+            const file = document.getElementById("picUpload").files[0];
+            let url = document.getElementById("profilePic").src;
+            if (file) {
+                const sRef = ref(storage, 'profilePics/' + auth.currentUser.uid);
+                await uploadBytes(sRef, file);
+                url = await getDownloadURL(sRef);
+            }
+            await updateDoc(userDocRef, {
+                fullname: newName, username: newUsername, bio: document.getElementById("editBio").value,
+                pronouns: document.getElementById("editPronouns").value, gender: document.getElementById("editGender").value,
+                category: document.getElementById("editCategory").value, music: document.getElementById("editMusic").value,
+                aiLabel: document.getElementById("aiLabel").checked, profilePic: url,
+                editCount: (lastChanged && (today - lastChanged >= fifteenDays)) ? 1 : editCount + 1,
+                lastChanged: new Date()
+            });
+            alert("Profile Update Ho Gayi!"); window.location.href = "profile.html";
+        } catch (e) { alert("Error: " + e.message); btn.innerText = "Save Profile"; }
+    });
 </script>
-
 </body>
 </html>

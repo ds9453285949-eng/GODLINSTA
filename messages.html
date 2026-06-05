@@ -3,47 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages - GODLINSTA</title>
+    <title>Messages • GODLINSTA</title>
     <style>
-        body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; }
-        .topbar { padding:15px; border-bottom:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center; }
+        body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; padding-bottom:70px; }
+        .topbar { padding:15px; border-bottom:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:#000; }
         .chat-item { padding:15px; display:flex; align-items:center; gap:15px; cursor:pointer; }
         .chat-item:hover { background:#111; }
-        .avatar { width:50px; height:50px; background:#333; border-radius:50%; }
-        .msg-info { flex-grow:1; }
-        .msg-text { color:#aaa; font-size:14px; }
-        .bottom-nav { position:fixed; bottom:0; width:100%; background:#000; display:flex; justify-content:space-around; padding:15px 0; border-top:1px solid #1a1a1a; }
+        .avatar { width:52px; height:52px; background:#333; border-radius:50%; object-fit:cover; }
+        .msg-info { flex-grow:1; overflow:hidden; }
+        .msg-text { color:#aaa; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .bottom-nav { position:fixed; bottom:0; width:100%; background:#000; display:flex; justify-content:space-around; padding:15px 0; border-top:1px solid #1a1a1a; z-index:1000; }
+        .nav-icon { font-size:24px; cursor:pointer; }
     </style>
 </head>
 <body>
 
 <div class="topbar">
-    <div onclick="history.back()">⬅️</div>
-    <div style="font-weight:bold;">Messages</div>
-    <div>📝</div>
+    <div onclick="history.back()" style="cursor:pointer;">⬅️</div>
+    <div style="font-weight:bold; font-size:18px;">Messages</div>
+    <div style="cursor:pointer;">📝</div>
 </div>
 
 <div id="chatList">
-    <div class="chat-item">
-        <div class="avatar"></div>
-        <div class="msg-info">
-            <strong>Godlinsta Support</strong>
-            <div class="msg-text">Welcome to your DMs!</div>
-        </div>
     </div>
-</div>
 
 <nav class="bottom-nav">
-    <div onclick="location.href='home.html'">🏠</div>
-    <div onclick="location.href='search.html'">🔍</div>
-    <div onclick="location.href='create.html'">➕</div>
-    <div onclick="location.href='reels.html'">🎬</div>
-    <div onclick="location.href='profile.html'">👤</div>
+    <div class="nav-icon" onclick="location.href='home.html'">🏠</div>
+    <div class="nav-icon" onclick="location.href='search.html'">🔍</div>
+    <div class="nav-icon" onclick="location.href='create.html'">➕</div>
+    <div class="nav-icon" onclick="location.href='reels.html'">🎬</div>
+    <div class="nav-icon" onclick="location.href='profile.html'">👤</div>
 </nav>
 
 <script type="module">
-    // Firebase se chats fetch karne ka logic yahan aayega
-    // Aapko 'chats' collection banani hogi jisme participants aur lastMessage ho
+    import { db, collection, query, where, orderBy, onSnapshot } from "./firebase-config.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const auth = getAuth();
+    const chatList = document.getElementById("chatList");
+
+    // Current user ke chats load karna
+    onAuthStateChanged(auth, (user) => {
+        if (!user) return;
+        
+        const q = query(collection(db, "chats"), where("participants", "array-contains", user.email), orderBy("lastUpdated", "desc"));
+        
+        onSnapshot(q, (snap) => {
+            chatList.innerHTML = "";
+            snap.forEach((doc) => {
+                const chat = doc.data();
+                const otherUser = chat.participants.find(p => p !== user.email);
+                
+                chatList.innerHTML += `
+                    <div class="chat-item" onclick="location.href='chat.html?id=${doc.id}'">
+                        <img src="https://ui-avatars.com/api/?name=${otherUser}" class="avatar">
+                        <div class="msg-info">
+                            <strong>${otherUser}</strong>
+                            <div class="msg-text">${chat.lastMessage || "Start conversation..."}</div>
+                        </div>
+                    </div>`;
+            });
+        });
+    });
 </script>
 </body>
 </html>

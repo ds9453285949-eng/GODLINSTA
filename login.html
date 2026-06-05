@@ -1,25 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GODLINSTA Login</title>
+    <title>Login • GODLINSTA</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; text-align: center; margin: 0; padding-top: 80px; }
-        .container { max-width: 320px; margin: auto; padding: 20px; }
-        input { width: 100%; padding: 14px; margin: 6px 0; background: #121212; color: #fff; border: 1px solid #333; border-radius: 6px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; background: #0095f6; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        body { background: #000; color: #fff; font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { width: 100%; max-width: 350px; padding: 20px; text-align: center; }
+        .logo { font-size: 32px; font-weight: 800; margin-bottom: 40px; letter-spacing: -1px; }
+        input { width: 100%; padding: 12px; margin: 5px 0; background: #121212; color: #fff; border: 1px solid #333; border-radius: 5px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 10px; background: #0095f6; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .divider { margin: 20px 0; color: #888; font-size: 13px; font-weight: bold; }
         .create { background: transparent; border: 1px solid #333; margin-top: 20px; }
-        a { color: #fff; font-size: 13px; text-decoration: none; display: block; margin-top: 15px; }
+        a { color: #fff; font-size: 12px; text-decoration: none; display: block; margin-top: 15px; }
     </style>
 </head>
 <body>
+
 <div class="container">
-    <h1 style="margin-bottom: 30px;">GODLINSTA</h1>
+    <div class="logo">GODLINSTA</div>
     <input type="text" id="loginInput" placeholder="Username, email, or phone">
     <input type="password" id="password" placeholder="Password">
     <button class="btn" id="loginBtn">Log In</button>
+    
+    <div class="divider">OR</div>
     <a href="forgot.html">Forgot password?</a>
     <a href="signup.html"><button class="btn create">Create new account</button></a>
 </div>
@@ -30,22 +35,36 @@
     import { getFirestore, collection, query, where, getDocs, or } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM", authDomain: "godlinsta.firebaseapp.com", projectId: "godlinsta", storageBucket: "godlinsta.firebasestorage.app", messagingSenderId: "808932933868", appId: "1:808932933868:web:098b5e9cb0fd4e856065c9" };
-    const auth = getAuth(initializeApp(firebaseConfig));
-    const db = getFirestore();
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
     document.getElementById("loginBtn").addEventListener("click", async () => {
         const input = document.getElementById("loginInput").value.trim();
         const pass = document.getElementById("password").value;
         const btn = document.getElementById("loginBtn");
-        if(!input || !pass) { alert("Please fill all fields!"); return; }
-        btn.disabled = true; btn.innerText = "Logging in...";
+
+        if(!input || !pass) { alert("Please enter both username and password!"); return; }
+        
+        btn.disabled = true; 
+        btn.innerText = "Logging in...";
+
         try {
+            // Find email by username or phone
             const q = query(collection(db, "users"), or(where("username", "==", input), where("email", "==", input), where("phone", "==", input)));
             const snap = await getDocs(q);
+            
             if(snap.empty) throw new Error("User not found!");
-            await signInWithEmailAndPassword(auth, snap.docs[0].data().email, pass);
-            window.location.replace("profile.html");
-        } catch(e) { alert(e.message); btn.disabled = false; btn.innerText = "Log In"; }
+            
+            const userEmail = snap.docs[0].data().email;
+            await signInWithEmailAndPassword(auth, userEmail, pass);
+            window.location.replace("home.html"); // Direct to Home
+        } catch(e) { 
+            alert("Login Failed: " + e.message); 
+            btn.disabled = false; 
+            btn.innerText = "Log In"; 
+        }
     });
 </script>
 </body>

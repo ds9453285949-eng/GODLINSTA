@@ -1,1 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - GODLINSTA</title>
+    <style>
+        body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; display:flex; flex-direction:column; height:100vh; }
+        .topbar { padding:15px; border-bottom:1px solid #1a1a1a; display:flex; align-items:center; gap:10px; background:#000; position:sticky; top:0; }
+        #chatBox { flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
+        
+        /* Message Bubbles */
+        .msg { padding:10px 15px; border-radius:20px; max-width:70%; font-size:15px; }
+        .sent { align-self:flex-end; background:#0095f6; }
+        .received { align-self:flex-start; background:#262626; }
+        
+        /* Input Area */
+        .input-area { padding:10px; display:flex; gap:10px; border-top:1px solid #1a1a1a; background:#000; }
+        input { flex:1; background:#1a1a1a; border:none; color:#fff; padding:12px; border-radius:25px; outline:none; }
+        button { background:none; border:none; color:#0095f6; font-weight:bold; cursor:pointer; }
+    </style>
+</head>
+<body>
 
+<div class="topbar">
+    <div onclick="history.back()">⬅️</div>
+    <strong>User Name</strong>
+</div>
+
+<div id="chatBox">
+    <div class="msg received">Hello! Kaise ho?</div>
+    <div class="msg sent">Main badhiya! Tum batao?</div>
+</div>
+
+<div class="input-area">
+    <input type="text" id="msgInput" placeholder="Message...">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script type="module">
+    import { db, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "./firebase-config.js";
+
+    window.sendMessage = async () => {
+        const input = document.getElementById("msgInput");
+        if(input.value.trim() === "") return;
+
+        await addDoc(collection(db, "messages"), {
+            text: input.value,
+            createdAt: serverTimestamp(),
+            senderId: "current_user_id" // Yahan apna Auth ID daalein
+        });
+        input.value = "";
+    };
+    
+    // Yahan onSnapshot se messages ko real-time load karne ka code aayega...
+</script>
+</body>
+</html>

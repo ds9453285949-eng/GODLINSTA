@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create - GODLINSTA</title>
+    <title>Create • GODLINSTA</title>
     <style>
         body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; }
-        .header { padding:20px; text-align:center; font-weight:bold; font-size:18px; border-bottom:1px solid #1a1a1a; }
-        .option { padding:25px 20px; border-bottom:1px solid #1a1a1a; font-size:18px; cursor:pointer; display:flex; align-items:center; transition:0.2s; }
-        .option:active { background:#1a1a1a; }
-        .icon { margin-right: 15px; font-size: 24px; }
+        .header { padding:20px; text-align:center; font-weight:bold; font-size:18px; border-bottom:1px solid #1a1a1a; position:sticky; top:0; background:#000; }
+        .option { padding:25px 20px; border-bottom:1px solid #1a1a1a; font-size:17px; cursor:pointer; display:flex; align-items:center; transition:0.2s; }
+        .option:active { background:#111; }
+        .icon { margin-right: 20px; font-size: 24px; width: 30px; text-align: center; }
+        .coming-soon { color:#444; cursor:not-allowed; }
     </style>
 </head>
 <body>
 
-<div class="header">Create</div>
+<div class="header">Create New</div>
 
 <div class="option" onclick="location.href='create-post.html'">
     <span class="icon">📷</span> Post
@@ -28,7 +29,7 @@
     <span class="icon">🎬</span> Reel
 </div>
 
-<div class="option" style="color:#666;">
+<div class="option coming-soon">
     <span class="icon">📡</span> Live (Coming Soon)
 </div>
 

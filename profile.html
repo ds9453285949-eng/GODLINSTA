@@ -156,6 +156,33 @@ data.fullname;
 document.getElementById("bio").innerText =
 data.bio || "";
 
+  const profilePosts = document.getElementById("profilePosts");
+
+const postsQuery = query(
+collection(db,"posts"),
+where("username","==",data.username)
+);
+
+const postsSnap = await getDocs(postsQuery);
+
+profilePosts.innerHTML = "";
+
+let totalPosts = 0;
+
+postsSnap.forEach((doc)=>{
+
+const post = doc.data();
+
+totalPosts++;
+
+profilePosts.innerHTML += `
+<img src="${post.image}" style="width:33%;height:120px;object-fit:cover;">
+`;
+
+});
+
+document.getElementById("postsCount").innerText = totalPosts;
+
 }
 });
 
@@ -189,28 +216,6 @@ alert("Live Feature Coming Soon");
 
 }
   
-const profilePosts = document.getElementById("profilePosts");
-
-const postsSnap = await getDocs(collection(db,"posts"));
-
-profilePosts.innerHTML = "";
-
-let totalPosts = 0;
-
-postsSnap.forEach((doc)=>{
-
-const post = doc.data();
-
-totalPosts++;
-
-profilePosts.innerHTML += `
-<img src="${post.image}" style="width:33%;height:120px;object-fit:cover;">
-`;
-
-});
-
-document.getElementById("postsCount").innerText = totalPosts;
-
 </script>
   
 </body>

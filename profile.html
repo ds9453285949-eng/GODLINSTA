@@ -4,221 +4,102 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GODLINSTA Profile</title>
-  
-  <link rel="stylesheet" href="profile.css">
+<link rel="stylesheet" href="profile.css">
+<style>
+    /* Instagram Pro Styling */
+    .prof-dash { background: #1a1a1a; padding: 12px; border-radius: 8px; margin: 10px 20px; font-size: 13px; border: 1px solid #333; color: white; }
+    .profile-posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 10px; }
+    .profile-posts img { width: 100%; height: 120px; object-fit: cover; }
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #333; }
+    .profile-buttons button { background: #333; border: none; color: white; padding: 8px 15px; border-radius: 8px; font-weight: 600; cursor: pointer; flex: 1; margin: 0 5px; }
+    .profile-buttons { display: flex; padding: 10px 20px; }
+</style>
 </head>
-
 <body>
 
 <div class="topbar">
-<div onclick="openUploadMenu()" style="cursor:pointer;">
-➕
-</div>
-<div id="username"></div>
-<div>☰</div>
+    <div onclick="openUploadMenu()" style="cursor:pointer;">➕</div>
+    <div id="username">Loading...</div>
+    <div>☰</div>
 </div>
 
 <div class="profile-header">
-
-<img id="profileImage" src="GODL LOGO.png" class="profile-pic">
-
-<div class="stats">
-
-<div>
-<h3 id="postsCount">0</h3>
-<p>Posts</p>
-</div>
-
-<div>
-<h3>0</h3>
-<p>Followers</p>
-</div>
-
-<div>
-<h3>0</h3>
-<p>Following</p>
-</div>
-
-</div>
-
+    <img id="profileImage" src="GODL LOGO.png" class="profile-pic">
+    <div class="stats">
+        <div><h3 id="postsCount">0</h3><p>Posts</p></div>
+        <div><h3>0</h3><p>Followers</p></div>
+        <div><h3>0</h3><p>Following</p></div>
+    </div>
 </div>
 
 <div class="profile-info">
+    <h3 id="name"></h3>
+    <div id="bio"></div>
+</div>
 
-<h3 id="name"></h3>
-
-<div id="bio"></div>
-
-<a id="website" style="color:#4f5dff"></a>
-
+<!-- Instagram Style Professional Dashboard -->
+<div class="prof-dash" id="proDashboard">
+    <strong>Professional dashboard</strong><br>
+    <span style="color:#aaa;">Aapki profile ki engagement yahan dikhegi.</span>
 </div>
 
 <div class="profile-buttons">
-
-<button onclick="location.href='edit-profile.html'">
-Edit Profile
-</button>
-
-<button>
-Share Profile
-</button>
-
-</div>
-
-<div class="highlights">
-
-<div class="highlight">
-<div class="highlight-circle">+</div>
-<div>New</div>
-</div>
-
-</div>
-
-<div class="tabs">
-
-<div>▦</div>
-
-<div>🎞</div>
-
-<div>👤</div>
-
-</div>
-
-<div class="bottom-nav">
-  
+    <button onclick="location.href='edit-profile.html'">Edit Profile</button>
+    <button>Share Profile</button>
 </div>
 
 <div id="profilePosts" class="profile-posts"></div>
 
 <div class="bottom-nav">
-
-<div onclick="location.href='home.html'">🏠</div>
-
-<div onclick="location.href='reels.html'">🎬</div>
-
-<div onclick="location.href='messages.html'">📩</div>
-
-<div onclick="location.href='search.html'">🔍</div>
-
-<div onclick="location.href='profile.html'">👤</div>
-
+    <div onclick="location.href='home.html'">🏠</div>
+    <div onclick="location.href='reels.html'">🎬</div>
+    <div onclick="location.href='messages.html'">📩</div>
+    <div onclick="location.href='search.html'">🔍</div>
+    <div onclick="location.href='profile.html'">👤</div>
 </div>
 
 <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-getFirestore,
-collection,
-query,
-where,
-getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
+        authDomain: "godlinsta.firebaseapp.com",
+        projectId: "godlinsta",
+        storageBucket: "godlinsta.firebasestorage.app",
+        messagingSenderId: "808932933868",
+        appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
+    };
 
-const firebaseConfig = {
-apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
-authDomain: "godlinsta.firebaseapp.com",
-projectId: "godlinsta",
-storageBucket: "godlinsta.firebasestorage.app",
-messagingSenderId: "808932933868",
-appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
-};
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    onAuthStateChanged(auth, async (user) => {
+        if(!user){ window.location.href = "login.html"; return; }
 
-onAuthStateChanged(auth, async (user) => {
+        const snap = await getDocs(query(collection(db,"users"), where("email","==",user.email)));
+        if(!snap.empty){
+            const data = snap.docs[0].data();
+            document.getElementById("username").innerText = data.username;
+            document.getElementById("name").innerText = data.fullname;
+            document.getElementById("bio").innerText = data.bio || "";
+            if(data.profilePic) document.getElementById("profileImage").src = data.profilePic;
 
-if(!user){
-window.location.href = "login.html";
-return;
-}
+            const postsQuery = query(collection(db,"posts"), where("username","==",data.username));
+            const postsSnap = await getDocs(postsQuery);
+            
+            const profilePosts = document.getElementById("profilePosts");
+            profilePosts.innerHTML = "";
+            postsSnap.forEach((doc)=>{
+                profilePosts.innerHTML += `<img src="${doc.data().image}">`;
+            });
+            document.getElementById("postsCount").innerText = postsSnap.size;
+        }
+    });
 
-const q = query(
-collection(db,"users"),
-where("email","==",user.email)
-);
-
-const snap = await getDocs(q);
-
-if(!snap.empty){
-
-const data = snap.docs[0].data();
-
-document.getElementById("username").innerText =
-data.username;
-
-document.getElementById("name").innerText =
-data.fullname;
-  
-document.getElementById("bio").innerText =
-data.bio || "";
-
-  const profilePosts = document.getElementById("profilePosts");
-
-const postsQuery = query(
-collection(db,"posts"),
-where("username","==",data.username)
-);
-
-const postsSnap = await getDocs(postsQuery);
-
-profilePosts.innerHTML = "";
-
-let totalPosts = 0;
-
-postsSnap.forEach((doc)=>{
-
-const post = doc.data();
-
-totalPosts++;
-
-profilePosts.innerHTML += `
-<img src="${post.image}" style="width:33%;height:120px;object-fit:cover;">
-`;
-
-});
-
-document.getElementById("postsCount").innerText = totalPosts;
-
-}
-});
-
-history.pushState(null, "", location.href);
-
-window.onpopstate = function () {
-history.pushState(null, "", location.href);
-};
-
-function openUploadMenu(){
-
-location.href = "create.html";
-
-}
-
-window.openUploadMenu = openUploadMenu;
-  
-if(choice=="1"){
-location.href="story-upload.html";
-}
-
-if(choice=="2"){
-location.href="create-post.html";
-}
-
-if(choice=="3"){
-location.href="reels-upload.html";
-}
-
-if(choice=="4"){
-alert("Live Feature Coming Soon");
-}
-
-window.openUploadMenu = openUploadMenu;
-  
+    window.openUploadMenu = () => { location.href = "create.html"; };
 </script>
-  
 </body>
 </html>

@@ -1,44 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create</title>
-
-<style>
-body{
-margin:0;
-background:black;
-color:white;
-font-family:Arial;
-}
-
-.option{
-padding:20px;
-border-bottom:1px solid #222;
-font-size:22px;
-cursor:pointer;
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create - GODLINSTA</title>
+    <style>
+        body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; }
+        .header { padding:20px; text-align:center; font-weight:bold; font-size:18px; border-bottom:1px solid #1a1a1a; }
+        .option { padding:25px 20px; border-bottom:1px solid #1a1a1a; font-size:18px; cursor:pointer; display:flex; align-items:center; transition:0.2s; }
+        .option:active { background:#1a1a1a; }
+        .icon { margin-right: 15px; font-size: 24px; }
+    </style>
 </head>
-
 <body>
 
+<div class="header">Create</div>
+
 <div class="option" onclick="location.href='create-post.html'">
-📷 Post
+    <span class="icon">📷</span> Post
 </div>
 
 <div class="option" onclick="location.href='story-upload.html'">
-🟣 Story
+    <span class="icon">🟣</span> Story
 </div>
 
 <div class="option" onclick="location.href='reels-upload.html'">
-🎬 Reel
+    <span class="icon">🎬</span> Reel
 </div>
 
-<div class="option">
-📡 Live (Coming Soon)
+<div class="option" style="color:#666;">
+    <span class="icon">📡</span> Live (Coming Soon)
 </div>
 
 </body>

@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
 <body style="background:#000; color:#fff; font-family:sans-serif; padding:20px;">
-    <h2>Upload Reel</h2>
+    <h2>Post New Reel</h2>
     <input type="file" id="vinput" accept="video/*">
-    <textarea id="caption" style="width:100%; height:80px; background:#111; color:#fff; border:1px solid #333;"></textarea>
+    <textarea id="caption" placeholder="Write a caption..." style="width:100%; height:80px; margin:10px 0; background:#111; color:#fff;"></textarea>
     <button id="upBtn" onclick="upload_reel()" style="width:100%; padding:15px; background:#0095f6; border:none; color:white; border-radius:8px;">Share Reel</button>
-    <div id="progressCont" style="display:none; width:100%; height:5px; background:#333; margin-top:20px;">
-        <div id="progressBar" style="width:0%; height:100%; background:#0095f6;"></div>
-    </div>
+    <div id="progressCont" style="display:none; margin-top:20px;"><div id="progressBar" style="height:5px; background:#0095f6; width:0%;"></div></div>
 
     <script type="module">
         import { db, collection, addDoc, serverTimestamp } from "./firebase-config.js";
@@ -24,16 +22,12 @@
             const xhr = new XMLHttpRequest();
             xhr.open("POST", "https://api.cloudinary.com/v1_1/dxcdq1jxz/video/upload");
             xhr.upload.onprogress = (e) => {
-                document.getElementById('progressBar').style.width = ((e.loaded / e.total) * 100) + "%";
+                document.getElementById('progressBar').style.width = (e.loaded / e.total) * 100 + "%";
             };
             xhr.onload = async () => {
                 const data = JSON.parse(xhr.responseText);
-                await addDoc(collection(db, "reels"), {
-                    videourl: data.secure_url,
-                    caption: document.getElementById('caption').value,
-                    createdat: serverTimestamp()
-                });
-                alert("Posted successfully!");
+                await addDoc(collection(db, "reels"), { videourl: data.secure_url, caption: document.getElementById('caption').value, createdat: serverTimestamp() });
+                alert("Posted!");
                 location.href = "reels.html";
             };
             xhr.send(fd);

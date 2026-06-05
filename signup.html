@@ -1,198 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GODLINSTA Sign Up</title>
-
-<style>
-body{
-background:black;
-color:white;
-font-family:Arial;
-text-align:center;
-margin:0;
-}
-
-.container{
-max-width:320px;
-margin:auto;
-padding:20px;
-}
-
-input{
-width:100%;
-padding:15px;
-margin:8px 0;
-background:#111;
-color:white;
-border:1px solid #333;
-border-radius:10px;
-box-sizing:border-box;
-}
-
-.btn{
-width:100%;
-padding:14px;
-background:#1877f2;
-color:white;
-border:none;
-border-radius:10px;
-font-size:18px;
-margin-top:10px;
-}
-
-.create{
-background:black;
-color:#1877f2;
-border:2px solid #1877f2;
-}
-
-.tagline{
-color:#4f5dff;
-font-weight:bold;
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GODLINSTA Sign Up</title>
+    <style>
+        body { background: black; color: white; font-family: sans-serif; text-align: center; margin: 0; padding-top: 50px; }
+        .container { max-width: 320px; margin: auto; padding: 20px; }
+        input { width: 100%; padding: 14px; margin: 6px 0; background: #111; color: white; border: 1px solid #333; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; background: #0095f6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn:disabled { opacity: 0.5; }
+        .create { background: black; border: 1px solid #333; margin-top: 20px; }
+        #suggestionBox { color: #0095f6; font-size: 12px; margin-bottom: 10px; cursor: pointer; min-height: 15px; }
+    </style>
 </head>
-
 <body>
-
 <div class="container">
-
-<img src="GODL LOGO.png" width="90">
-
-<h1>𝐂𝐑𝐄𝐀𝐓𝐄 𝐀𝐂𝐂𝐎𝐔𝐍𝐓</h1>
-
-<p class="tagline">
-Join GODLINSTA Today
-</p>
-
-<input type="text" id="fullname" placeholder="Full Name">
-
-<input type="text" id="username" placeholder="Username">
-  
-<input type="email" id="email" placeholder="Email">
-
-<input type="password" id="password" placeholder="Password">
-  
-<button class="btn" id="signupBtn">
-Sign Up
-</button>
-  
-<br><br>
-
-<a href="login.html">
-<button class="btn create">
-Back To Login
-</button>
-</a>
-
+    <img src="GODL LOGO.png" width="90">
+    <h1>𝐂𝐑𝐄𝐀𝐓𝐄 𝐀𝐂𝐂𝐎𝐔𝐍𝐓</h1>
+    <input type="text" id="fullname" placeholder="Full Name">
+    <input type="text" id="username" placeholder="Username">
+    <div id="suggestionBox"></div>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button class="btn" id="signupBtn">Sign Up</button>
+    <a href="login.html"><button class="btn create">Back To Login</button></a>
 </div>
 
 <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    const firebaseConfig = { apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM", authDomain: "godlinsta.firebaseapp.com", projectId: "godlinsta", storageBucket: "godlinsta.firebasestorage.app", messagingSenderId: "808932933868", appId: "1:808932933868:web:098b5e9cb0fd4e856065c9" };
+    const auth = getAuth(initializeApp(firebaseConfig));
+    const db = getFirestore();
 
-import {
-getAuth,
-createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    document.getElementById("username").addEventListener("input", async (e) => {
+        const val = e.target.value.toLowerCase().trim();
+        if(val.length < 3) return;
+        const snap = await getDocs(query(collection(db, "users"), where("username", "==", val)));
+        document.getElementById("suggestionBox").innerHTML = !snap.empty ? `Not available. Try: <span onclick="document.getElementById('username').value='${val+Math.floor(Math.random()*99)}'">${val+Math.floor(Math.random()*99)}</span>` : "✓ Available";
+    });
 
-import {
-getFirestore,
-collection,
-query,
-where,
-getDocs,
-addDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
-authDomain: "godlinsta.firebaseapp.com",
-projectId: "godlinsta",
-storageBucket: "godlinsta.firebasestorage.app",
-messagingSenderId: "808932933868",
-appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-document.getElementById("signupBtn").addEventListener("click", async () => {
-
-const fullname = document.getElementById("fullname").value.trim();
-
-const username = document.getElementById("username").value
-.toLowerCase()
-.trim();
-
-const email = document.getElementById("email").value.trim();
-
-const password = document.getElementById("password").value;
-
-if(fullname === "" || username === "" || email === "" || password === ""){
-alert("Fill all fields");
-return;
-}
-
-if(username.includes(" ")){
-alert("Username cannot contain spaces");
-return;
-}
-
-const q = query(
-collection(db,"users"),
-where("username","==",username)
-);
-
-const snap = await getDocs(q);
-
-if(!snap.empty){
-alert("Username already taken");
-return;
-}
-
-try {
-
-await createUserWithEmailAndPassword(
-auth,
-email,
-password
-);
-
-await addDoc(
-collection(db,"users"),
-{
-fullname: fullname,
-username: username,
-email: email,
-followers: 0,
-following: 0,
-posts: 0
-}
-);
-
-localStorage.setItem(
-"currentUsername",
-username
-);
-
-alert("Account Created Successfully");
-
-window.location.href = "login.html";
-
-} catch(error) {
-
-alert(error.message);
-
-}
-
-});
-  
+    document.getElementById("signupBtn").addEventListener("click", async () => {
+        const btn = document.getElementById("signupBtn");
+        const fullname = document.getElementById("fullname").value.trim();
+        const username = document.getElementById("username").value.toLowerCase().trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        if(!fullname || !username || !email || !password) { alert("Fill all fields"); return; }
+        btn.disabled = true; btn.innerText = "Creating...";
+        try {
+            const snap = await getDocs(query(collection(db, "users"), where("username", "==", username)));
+            if(!snap.empty) throw new Error("Username taken!");
+            await createUserWithEmailAndPassword(auth, email, password);
+            await addDoc(collection(db, "users"), { fullname, username, email, followers:0, following:0, posts:0 });
+            alert("Account Created!"); window.location.href = "login.html";
+        } catch(e) { alert(e.message); btn.disabled = false; btn.innerText = "Sign Up"; }
+    });
 </script>
-
 </body>
 </html>

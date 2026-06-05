@@ -2,47 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifications - GODLINSTA</title>
+    <title>Notifications • GODLINSTA</title>
     <style>
-        body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; }
-        .topbar { padding:15px; border-bottom:1px solid #1a1a1a; font-weight:bold; font-size:18px; text-align:center; position:sticky; top:0; background:#000; }
-        
-        .notif-item { padding:15px 20px; display:flex; align-items:center; gap:15px; }
-        .avatar { width:45px; height:45px; background:#333; border-radius:50%; }
-        .notif-text { font-size:14px; color:#ddd; }
-        .notif-text b { color:#fff; }
-        
-        .bottom-nav { position:fixed; bottom:0; width:100%; background:#000; display:flex; justify-content:space-around; padding:15px 0; border-top:1px solid #1a1a1a; }
-        .nav-icon { font-size:24px; cursor:pointer; }
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; }
+        .topbar { padding: 15px; border-bottom: 1px solid #1a1a1a; font-weight: bold; }
+        .notif-item { padding: 15px; border-bottom: 1px solid #1a1a1a; font-size: 14px; }
+        .notif-item span { font-weight: bold; }
     </style>
 </head>
 <body>
-
-<div class="topbar">Notifications</div>
-
-<div id="notifList">
-    <div class="notif-item">
-        <div class="avatar"></div>
-        <div class="notif-text"><b>user123</b> liked your post. <span style="color:#666;">2h</span></div>
+    <div class="topbar">Notifications</div>
+    <div id="notifList">
+        <div class="notif-item"><span>Godlinsta:</span> Welcome to your new profile!</div>
     </div>
-    <div class="notif-item">
-        <div class="avatar"></div>
-        <div class="notif-text"><b>godlinsta_official</b> started following you. <span style="color:#666;">5h</span></div>
-    </div>
-</div>
-
-<nav class="bottom-nav">
-    <div class="nav-icon" onclick="location.href='home.html'">🏠</div>
-    <div class="nav-icon" onclick="location.href='search.html'">🔍</div>
-    <div class="nav-icon" onclick="location.href='create.html'">➕</div>
-    <div class="nav-icon" onclick="location.href='reels.html'">🎬</div>
-    <div class="nav-icon" onclick="location.href='profile.html'">👤</div>
-</nav>
-
-<script type="module">
-    // Firebase se notifications fetch karne ka logic yahan aayega
-    // Aap 'notifications' collection se data snap karke yahan append kar sakte ho
-</script>
 </body>
 </html>

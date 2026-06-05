@@ -224,6 +224,64 @@ alert("Live Feature Coming Soon");
 }
 
 }
+
+  const firebaseConfig = {
+apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
+authDomain: "godlinsta.firebaseapp.com",
+projectId: "godlinsta",
+storageBucket: "godlinsta.firebasestorage.app",
+messagingSenderId: "808932933868",
+appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const feed = document.getElementById("feed");
+
+const postsSnap = await getDocs(
+collection(db,"posts")
+);
+
+postsSnap.forEach((doc)=>{
+
+const post = doc.data();
+
+feed.innerHTML += `
+
+<div class="post">
+
+<div style="
+display:flex;
+align-items:center;
+gap:10px;
+padding:10px;
+">
+
+<img src="GODL LOGO.png"
+style="
+width:35px;
+height:35px;
+border-radius:50%;
+">
+
+<b>${post.username}</b>
+
+</div>
+
+<img src="${post.image}">
+
+<p style="padding:10px;">
+<b>${post.username}</b>
+${post.caption || ""}
+</p>
+
+</div>
+
+`;
+
+});
+
   
   let stories =
 JSON.parse(localStorage.getItem("stories")) || [];

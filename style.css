@@ -1,1 +1,4 @@
-
+body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; }
+.bottom-nav { position:fixed; bottom:0; width:100%; background:#000; display:flex; justify-content:space-around; padding:15px 0; border-top:1px solid #333; z-index:1000; }
+.topbar { padding:15px; border-bottom:1px solid #333; font-weight:bold; text-align:center; }
+.nav-item { font-size:24px; cursor:pointer; }

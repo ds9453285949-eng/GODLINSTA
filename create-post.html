@@ -70,10 +70,20 @@ font-size:18px;
 <button id="postBtn">Post</button>
 
 </div>
+  
+<script type="module">
 
-<script>
+import {
+db,
+collection,
+addDoc,
+serverTimestamp
+} from "./firebase-config.js";
 
-let imageData = "";
+const CLOUD_NAME = "dxcdq1jxz";
+const UPLOAD_PRESET = "godlinsta";
+
+let selectedFile = null;
 
 const postImage = document.getElementById("postImage");
 const preview = document.getElementById("preview");
@@ -81,49 +91,62 @@ const postBtn = document.getElementById("postBtn");
 
 postImage.addEventListener("change", function(){
 
-const file = this.files[0];
+selectedFile = this.files[0];
 
-if(!file) return;
+if(!selectedFile) return;
 
-const reader = new FileReader();
-
-reader.onload = function(e){
-
-imageData = e.target.result;
-preview.src = imageData;
-
-};
-
-reader.readAsDataURL(file);
+preview.src = URL.createObjectURL(selectedFile);
 
 });
 
-postBtn.addEventListener("click", function(){
+postBtn.addEventListener("click", async ()=>{
 
-if(imageData==""){
+if(!selectedFile){
 alert("Please Select Image");
 return;
 }
 
-const caption =
-document.getElementById("caption").value;
+postBtn.innerText = "Uploading...";
 
-let posts =
-JSON.parse(localStorage.getItem("posts")) || [];
+try{
 
-posts.unshift({
-image:imageData,
-caption:caption
-});
+const formData = new FormData();
 
-localStorage.setItem(
-"posts",
-JSON.stringify(posts)
+formData.append("file", selectedFile);
+formData.append("upload_preset", UPLOAD_PRESET);
+
+const upload = await fetch(
+`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+{
+method:"POST",
+body:formData
+}
+);
+
+const cloudData = await upload.json();
+
+await addDoc(
+collection(db,"posts"),
+{
+image: cloudData.secure_url,
+caption: document.getElementById("caption").value,
+username: localStorage.getItem("username") || "godl_user",
+likes: 0,
+comments: 0,
+createdAt: serverTimestamp()
+}
 );
 
 alert("Post Uploaded Successfully");
 
 location.href="home.html";
+
+}catch(error){
+
+console.log(error);
+alert("Upload Failed");
+
+}
 
 });
 

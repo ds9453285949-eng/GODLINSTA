@@ -125,8 +125,6 @@ body:formData
 
 const cloudData = await upload.json();
 
-alert(localStorage.getItem("currentUsername"));
-
 await addDoc(
 collection(db,"posts"),
 {

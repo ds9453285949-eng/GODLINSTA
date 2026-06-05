@@ -130,7 +130,7 @@ collection(db,"posts"),
 {
 image: cloudData.secure_url,
 caption: document.getElementById("caption").value,
-username: localStorage.getItem("username") || "godl_user",
+username: localStorage.getItem("currentUsername"),
 likes: 0,
 comments: 0,
 createdAt: serverTimestamp()

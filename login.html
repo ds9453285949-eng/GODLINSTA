@@ -1,169 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GODLINSTA Login</title>
-
-<style>
-body{
-background:black;
-color:white;
-font-family:Arial;
-text-align:center;
-margin:0;
-}
-
-.container{
-max-width:320px;
-margin:auto;
-padding:20px;
-}
-
-input{
-width:100%;
-padding:15px;
-margin:8px 0;
-background:#111;
-color:white;
-border:1px solid #333;
-border-radius:10px;
-box-sizing:border-box;
-}
-
-.btn{
-width:100%;
-padding:14px;
-background:#1877f2;
-color:white;
-border:none;
-border-radius:10px;
-font-size:18px;
-margin-top:10px;
-}
-
-.create{
-background:black;
-color:#1877f2;
-border:2px solid #1877f2;
-}
-
-.link{
-color:#1877f2;
-text-decoration:none;
-display:block;
-margin-top:15px;
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GODLINSTA Login</title>
+    <style>
+        body { background: #000; color: #fff; font-family: sans-serif; text-align: center; margin: 0; padding-top: 80px; }
+        .container { max-width: 320px; margin: auto; padding: 20px; }
+        input { width: 100%; padding: 14px; margin: 6px 0; background: #121212; color: #fff; border: 1px solid #333; border-radius: 6px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; background: #0095f6; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .create { background: transparent; border: 1px solid #333; margin-top: 20px; }
+        a { color: #fff; font-size: 13px; text-decoration: none; display: block; margin-top: 15px; }
+    </style>
 </head>
 <body>
-
 <div class="container">
-
-<img src="GODL LOGO.png" width="90">
-
-<h1>𝐆𝐎𝐃𝐋𝐈𝐍𝐒𝐓𝐀</h1>
-
-<p style="color:#4f5dff;">
-India's Future Social Media App
-</p>
-
-<input type="email" id="email" placeholder="Email">
-
-<input type="password" id="password" placeholder="Password">
-
-<button class="btn" id="loginBtn">
-Log In
-</button>
-
-<a href="forgot.html" class="link">
-Forgot Password?
-</a>
-  
-<br>
-
-<a href="signup.html">
-<button class="btn create">
-Create New Account
-</button>
-</a>
-
+    <h1 style="margin-bottom: 30px;">GODLINSTA</h1>
+    <input type="text" id="loginInput" placeholder="Username, email, or phone">
+    <input type="password" id="password" placeholder="Password">
+    <button class="btn" id="loginBtn">Log In</button>
+    <a href="forgot.html">Forgot password?</a>
+    <a href="signup.html"><button class="btn create">Create new account</button></a>
 </div>
 
- <script type="module">
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, or } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-   
-import {
-getAuth,
-signInWithEmailAndPassword,
-sendPasswordResetEmail,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    const firebaseConfig = { apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM", authDomain: "godlinsta.firebaseapp.com", projectId: "godlinsta", storageBucket: "godlinsta.firebasestorage.app", messagingSenderId: "808932933868", appId: "1:808932933868:web:098b5e9cb0fd4e856065c9" };
+    const auth = getAuth(initializeApp(firebaseConfig));
+    const db = getFirestore();
 
-   import {
-getFirestore,
-collection,
-query,
-where,
-getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-   
-const firebaseConfig = {
-apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
-authDomain: "godlinsta.firebaseapp.com",
-projectId: "godlinsta",
-storageBucket: "godlinsta.firebasestorage.app",
-messagingSenderId: "808932933868",
-appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-document.getElementById("loginBtn").addEventListener("click", async function(){
-
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
-
-try{
-
-await signInWithEmailAndPassword(auth,email,password);
-
-const q = query(
-collection(db,"users"),
-where("email","==",email)
-);
-
-const snap = await getDocs(q);
-
-if(!snap.empty){
-
-const data = snap.docs[0].data();
-
-localStorage.setItem(
-"currentUsername",
-data.username
-);
-
-}
-
-alert("Login Successful");
-
-window.location.replace("profile.html");
-
-}catch(error){
-
-alert(error.message);
-
-}
-
-});
-   
-
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+        const input = document.getElementById("loginInput").value.trim();
+        const pass = document.getElementById("password").value;
+        const btn = document.getElementById("loginBtn");
+        if(!input || !pass) { alert("Please fill all fields!"); return; }
+        btn.disabled = true; btn.innerText = "Logging in...";
+        try {
+            const q = query(collection(db, "users"), or(where("username", "==", input), where("email", "==", input), where("phone", "==", input)));
+            const snap = await getDocs(q);
+            if(snap.empty) throw new Error("User not found!");
+            await signInWithEmailAndPassword(auth, snap.docs[0].data().email, pass);
+            window.location.replace("profile.html");
+        } catch(e) { alert(e.message); btn.disabled = false; btn.innerText = "Log In"; }
+    });
 </script>
-  
 </body>
 </html>

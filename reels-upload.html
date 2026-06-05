@@ -1,18 +1,33 @@
 <!DOCTYPE html>
 <html>
-<body style="background:#000; color:#fff; font-family:sans-serif; padding:20px;">
-    <h2>Post New Reel</h2>
-    <input type="file" id="vinput" accept="video/*">
-    <textarea id="caption" placeholder="Write a caption..." style="width:100%; height:80px; margin:10px 0; background:#111; color:#fff;"></textarea>
-    <button id="upBtn" onclick="upload_reel()" style="width:100%; padding:15px; background:#0095f6; border:none; color:white; border-radius:8px;">Share Reel</button>
-    <div id="progressCont" style="display:none; margin-top:20px;"><div id="progressBar" style="height:5px; background:#0095f6; width:0%;"></div></div>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { margin:0; background:#000; color:#fff; font-family:sans-serif; }
+        .box { padding:20px; }
+        textarea { width:100%; height:80px; background:#111; color:#fff; border:1px solid #333; margin:10px 0; border-radius:8px; padding:10px; }
+        .btn { width:100%; padding:15px; background:#0095f6; border:none; color:#fff; border-radius:8px; font-weight:bold; }
+        #progressCont { display:none; margin-top:20px; background:#333; height:8px; border-radius:4px; overflow:hidden; }
+        #progressBar { height:100%; background:#0095f6; width:0%; transition:0.3s; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Post New Reel</h2>
+        <input type="file" id="vinput" accept="video/*">
+        <textarea id="caption" placeholder="Write a caption..."></textarea>
+        <button class="btn" id="upBtn" onclick="upload_reel()">Share Reel</button>
+        <div id="progressCont"><div id="progressBar"></div></div>
+    </div>
 
     <script type="module">
         import { db, collection, addDoc, serverTimestamp } from "./firebase-config.js";
+        
         window.upload_reel = async () => {
             const file = document.getElementById('vinput').files[0];
             if(!file) return alert("Select video!");
-            document.getElementById('upBtn').disabled = true;
+            
+            document.getElementById('upBtn').style.display = 'none';
             document.getElementById('progressCont').style.display = 'block';
             
             const fd = new FormData();
@@ -21,13 +36,20 @@
             
             const xhr = new XMLHttpRequest();
             xhr.open("POST", "https://api.cloudinary.com/v1_1/dxcdq1jxz/video/upload");
+            
             xhr.upload.onprogress = (e) => {
-                document.getElementById('progressBar').style.width = (e.loaded / e.total) * 100 + "%";
+                const p = (e.loaded / e.total) * 100;
+                document.getElementById('progressBar').style.width = p + "%";
             };
+
             xhr.onload = async () => {
                 const data = JSON.parse(xhr.responseText);
-                await addDoc(collection(db, "reels"), { videourl: data.secure_url, caption: document.getElementById('caption').value, createdat: serverTimestamp() });
-                alert("Posted!");
+                await addDoc(collection(db, "reels"), {
+                    videourl: data.secure_url,
+                    caption: document.getElementById('caption').value,
+                    createdAt: serverTimestamp()
+                });
+                // Success: Redirect to Feed
                 location.href = "reels.html";
             };
             xhr.send(fd);

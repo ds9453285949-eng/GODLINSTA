@@ -1,23 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Reel</title>
     <style>
-        body { margin:0; background:#000; color:#fff; font-family:sans-serif; }
-        .box { padding:20px; }
-        textarea { width:100%; height:80px; background:#111; color:#fff; border:1px solid #333; margin:10px 0; border-radius:8px; padding:10px; }
-        .btn { width:100%; padding:15px; background:#0095f6; border:none; color:#fff; border-radius:8px; font-weight:bold; }
-        #progressCont { display:none; margin-top:20px; background:#333; height:8px; border-radius:4px; overflow:hidden; }
-        #progressBar { height:100%; background:#0095f6; width:0%; transition:0.3s; }
+        body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; }
+        .box { padding:20px; max-width:400px; margin:auto; }
+        h2 { text-align:center; margin-bottom:20px; }
+        textarea { width:100%; height:100px; background:#121212; color:#fff; border:1px solid #333; margin:15px 0; border-radius:12px; padding:12px; box-sizing:border-box; resize:none; }
+        .btn { width:100%; padding:14px; background:#0095f6; border:none; color:#fff; border-radius:10px; font-weight:bold; cursor:pointer; }
+        #progressCont { display:none; margin-top:20px; }
+        .progress-bar-bg { background:#333; height:8px; border-radius:4px; overflow:hidden; }
+        #progressBar { height:100%; background:#0095f6; width:0%; transition:0.2s; }
+        #statusText { text-align:center; margin-top:10px; font-size:14px; color:#aaa; }
     </style>
 </head>
 <body>
     <div class="box">
         <h2>Post New Reel</h2>
-        <input type="file" id="vinput" accept="video/*">
+        <input type="file" id="vinput" accept="video/*" style="width:100%;">
         <textarea id="caption" placeholder="Write a caption..."></textarea>
         <button class="btn" id="upBtn" onclick="upload_reel()">Share Reel</button>
-        <div id="progressCont"><div id="progressBar"></div></div>
+        
+        <div id="progressCont">
+            <div class="progress-bar-bg"><div id="progressBar"></div></div>
+            <p id="statusText">Uploading 0%...</p>
+        </div>
     </div>
 
     <script type="module">
@@ -25,8 +34,9 @@
         
         window.upload_reel = async () => {
             const file = document.getElementById('vinput').files[0];
-            if(!file) return alert("Select video!");
+            if(!file) return alert("Please select a video file!");
             
+            // UI Update
             document.getElementById('upBtn').style.display = 'none';
             document.getElementById('progressCont').style.display = 'block';
             
@@ -38,8 +48,9 @@
             xhr.open("POST", "https://api.cloudinary.com/v1_1/dxcdq1jxz/video/upload");
             
             xhr.upload.onprogress = (e) => {
-                const p = (e.loaded / e.total) * 100;
-                document.getElementById('progressBar').style.width = p + "%";
+                const percent = Math.round((e.loaded / e.total) * 100);
+                document.getElementById('progressBar').style.width = percent + "%";
+                document.getElementById('statusText').innerText = "Uploading " + percent + "%...";
             };
 
             xhr.onload = async () => {
@@ -49,9 +60,11 @@
                     caption: document.getElementById('caption').value,
                     createdAt: serverTimestamp()
                 });
-                // Success: Redirect to Feed
+                // Redirect back to Reels feed
                 location.href = "reels.html";
             };
+            
+            xhr.onerror = () => { alert("Upload failed!"); location.reload(); };
             xhr.send(fd);
         };
     </script>

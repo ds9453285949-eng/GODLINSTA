@@ -3,295 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GODLINSTA Home</title>
-
+<title>GODLINSTA</title>
 <style>
+    body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; padding-bottom:70px; }
+    
+    /* Tiranga Motion Logo */
+    .logo-motion {
+        font-weight: 900; font-size: 24px; letter-spacing: -1px;
+        background: linear-gradient(90deg, #FF9933, #FFFFFF, #138808);
+        background-size: 200% 200%;
+        -webkit-background-clip: text; background-clip: text;
+        color: transparent;
+        animation: gradient-motion 3s ease infinite;
+    }
+    @keyframes gradient-motion {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
 
-body{
-margin:0;
-background:#000;
-color:white;
-font-family:Arial,sans-serif;
-padding-bottom:70px;
-}
-
-.topbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:15px;
-border-bottom:1px solid #222;
-font-size:24px;
-font-weight:bold;
-}
-
-  .stories{
-display:flex;
-overflow-x:auto;
-padding:15px;
-gap:15px;
-border-bottom:1px solid #222;
-}
-
-.story{
-text-align:center;
-min-width:80px;
-}
-
-.story img{
-width:60px;
-height:60px;
-border-radius:50%;
-border:3px solid #ff2d55;
-object-fit:cover;
-}
-
-.story p{
-margin-top:5px;
-font-size:12px;
-}
-
-.feed{
-padding:0;
-}
-
-.post{
-background:#000;
-padding:0;
-margin-bottom:20px;
-border-radius:0;
-}
-
-.post img{
-width:100%;
-max-height:500px;
-object-fit:cover;
-border-radius:0;
-}
-
-.actions{
-display:flex;
-gap:20px;
-font-size:24px;
-margin-top:10px;
-}
-
-.bottom-nav{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-background:black;
-display:flex;
-justify-content:space-around;
-padding:12px 0;
-border-top:1px solid #222;
-font-size:24px;
-}
-
-  #notifDot{
-width:10px;
-height:10px;
-background:#0095f6;
-border-radius:50%;
-position:absolute;
-top:0;
-right:-3px;
-display:none;
-}
-  
+    .topbar { display:flex; justify-content:space-between; align-items:center; padding:15px; border-bottom:1px solid #262626; position:sticky; top:0; background:#000; z-index:1000; }
+    .feed { display: flex; flex-direction: column; align-items: center; }
+    .post { width: 100%; max-width: 400px; margin-bottom: 20px; border-bottom: 1px solid #262626; }
+    .post-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #111; }
+    .actions { display: flex; justify-content: space-between; padding: 12px; font-size: 26px; }
+    .bottom-nav { position:fixed; bottom:0; width:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(15px); display:flex; justify-content:space-around; padding:12px 0; border-top:1px solid #262626; font-size:24px; z-index:1000; }
 </style>
 </head>
-
 <body>
 
 <div class="topbar">
-
-<div onclick="openUploadMenu()">
-➕
+    <div onclick="location.href='create.html'">➕</div>
+    <div class="logo-motion">GODLINSTA</div>
+    <div onclick="location.href='notifications.html'">❤️</div>
 </div>
 
-<div>
-GODLINSTA
-</div>
-
-<div style="position:relative;cursor:pointer;"
-onclick="openNotifications()">
-
-❤️
-
-<span id="notifDot"></span>
-  
-</div>
-  
-</div>
-  
-<div class="stories" id="stories">
-
-<div class="story" onclick="location.href='story-upload.html'">
-
-<div style="position:relative;">
-
-<img src="GODL LOGO.png">
-
-<span style="
-position:absolute;
-bottom:0;
-right:0;
-background:#0095f6;
-color:white;
-width:22px;
-height:22px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:18px;
-border:2px solid black;
-">
-+
-</span>
-
-</div>
-
-<p>Your Story</p>
-
-</div>
-
-</div>
-
-<div class="feed" id="feed">
-
-</div>
+<div class="feed" id="feed"></div>
 
 <div class="bottom-nav">
-
-<div onclick="location.href='home.html'">🏠</div>
-
-<div onclick="location.href='reels.html'">🎬</div>
-
-<div onclick="location.href='messages.html'">📩</div>
-
-<div onclick="location.href='search.html'">🔍</div>
-
-<div onclick="location.href='profile.html'">👤</div>
-
+    <div onclick="location.href='home.html'">🏠</div>
+    <div onclick="location.href='reels.html'">🎬</div>
+    <div onclick="location.href='create.html'">➕</div>
+    <div onclick="location.href='search.html'">🔍</div>
+    <div onclick="location.href='profile.html'">👤</div>
 </div>
+
 <script type="module">
+    import { db, collection, query, orderBy, onSnapshot } from "./firebase-config.js";
 
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    const feed = document.getElementById("feed");
+    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 
-import {
-getFirestore,
-collection,
-getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-if(localStorage.getItem("hasNotification")=="true"){
-document.getElementById("notifDot").style.display="block";
-}
-
-function openNotifications(){
-
-localStorage.setItem("hasNotification","false");
-
-document.getElementById("notifDot").style.display="none";
-
-location.href="notifications.html";
-
-}
-
-function openUploadMenu(){
-
-location.href = "create.html";
-
-}
-
-  window.openUploadMenu = openUploadMenu;
-window.openNotifications = openNotifications;
-
-  const firebaseConfig = {
-apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM",
-authDomain: "godlinsta.firebaseapp.com",
-projectId: "godlinsta",
-storageBucket: "godlinsta.firebasestorage.app",
-messagingSenderId: "808932933868",
-appId: "1:808932933868:web:098b5e9cb0fd4e856065c9"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const feed = document.getElementById("feed");
-
-const postsSnap = await getDocs(
-collection(db,"posts")
-);
-
-postsSnap.forEach((doc)=>{
-
-const post = doc.data();
-
-feed.innerHTML += `
-
-<div class="post">
-
-<div style="
-display:flex;
-align-items:center;
-gap:10px;
-padding:10px;
-">
-
-<img src="GODL LOGO.png"
-style="
-width:35px;
-height:35px;
-border-radius:50%;
-">
-
-<b>${post.username}</b>
-
-</div>
-
-<img src="${post.image}">
-
-<p style="padding:10px;">
-<b>${post.username}</b>
-${post.caption || ""}
-</p>
-
-</div>
-
-`;
-
-});
-
-  
-  let stories =
-JSON.parse(localStorage.getItem("stories")) || [];
-
-const storiesBox =
-document.getElementById("stories");
-
-stories.forEach(story=>{
-
-storiesBox.innerHTML += `
-
-<div class="story">
-
-<img src="${story.image}"
-onclick="window.open('${story.image}')">
-
-<p>Story</p>
-
-</div>
-
-`;
-
-});
-  
+    onSnapshot(q, (snapshot) => {
+        feed.innerHTML = "";
+        snapshot.forEach((doc) => {
+            const p = doc.data();
+            feed.innerHTML += `
+                <div class="post">
+                    <div style="padding:10px; font-weight:bold;">${p.username}</div>
+                    <img src="${p.image}" class="post-img" style="filter: ${p.filter || 'none'}">
+                    <div class="actions">
+                        <span>❤️ 💬 ✈️</span>
+                        <span onclick="alert('Saved!')">🔖</span>
+                    </div>
+                    <div style="padding:0 10px 10px;"><b>${p.username}</b> ${p.caption}</div>
+                </div>
+            `;
+        });
+    });
 </script>
-
 </body>
 </html>

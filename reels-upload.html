@@ -1,21 +1,34 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Reels Upload</title>
-<style>
-body{
-background:black;
-color:white;
-text-align:center;
-font-family:Arial;
-}
-</style>
-</head>
-<body>
+<body style="background:#000; color:#fff; font-family:sans-serif; padding:20px;">
+    <h2>Post New Reel</h2>
+    <input type="file" id="vinput" accept="video/*">
+    <textarea id="caption" style="width:100%; height:100px; margin:10px 0; background:#111; color:#fff; border-radius:8px;"></textarea>
+    <button onclick="upload_reel()" style="width:100%; padding:15px; background:#0095f6; border:none; color:#fff; font-weight:bold; border-radius:8px;">Share Reel</button>
 
-<h2>Create Reel</h2>
+    <script type="module">
+        import { db, collection, addDoc, serverTimestamp } from "./firebase-config.js";
+        window.upload_reel = async () => {
+            const file = document.getElementById('vinput').files[0];
+            if(!file) return alert("Select video!");
+            
+            alert("Uploading... please wait!");
+            const fd = new FormData();
+            fd.append("file", file);
+            fd.append("upload_preset", "godlinsta_unsigned");
+            fd.append("folder", "reels");
 
-<input type="file" accept="video/*">
-
+            const res = await fetch("https://api.cloudinary.com/v1_1/dxcdq1jxz/upload", {method:"POST", body:fd});
+            const data = await res.json();
+            
+            await addDoc(collection(db, "reels"), {
+                videourl: data.secure_url,
+                caption: document.getElementById('caption').value,
+                createdat: serverTimestamp()
+            });
+            alert("Reel Live!");
+            location.href = "reels.html";
+        };
+    </script>
 </body>
 </html>

@@ -17,6 +17,25 @@
         .post-img { width:100%; aspect-ratio:1/1; object-fit:cover; }
         .actions { display:flex; justify-content:space-between; padding:12px; font-size:26px; }
         .bottom-nav { position:fixed; bottom:0; width:100%; background:rgba(0,0,0,0.9); display:flex; justify-content:space-around; padding:15px 0; border-top:1px solid #262626; font-size:24px; z-index:1000; }
+
+        /* Story Ring Gradient Effect */
+.story-ring {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    padding: 3px; /* Border ki thickness */
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    cursor: pointer;
+}
+
+.story-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #000; /* Inner ring jo background ke sath match kare */
+}
+        
     </style>
 </head>
 <body>

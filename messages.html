@@ -1,9 +1,49 @@
 <!DOCTYPE html>
-<html>
-<body style="background:black;color:white;">
-<h1>Coming Soon</h1>
-  <h1 style="color:white;text-align:center;">
-Messages Page
-</h1>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - GODLINSTA</title>
+    <style>
+        body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; }
+        .topbar { padding:15px; border-bottom:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center; }
+        .chat-item { padding:15px; display:flex; align-items:center; gap:15px; cursor:pointer; }
+        .chat-item:hover { background:#111; }
+        .avatar { width:50px; height:50px; background:#333; border-radius:50%; }
+        .msg-info { flex-grow:1; }
+        .msg-text { color:#aaa; font-size:14px; }
+        .bottom-nav { position:fixed; bottom:0; width:100%; background:#000; display:flex; justify-content:space-around; padding:15px 0; border-top:1px solid #1a1a1a; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div onclick="history.back()">⬅️</div>
+    <div style="font-weight:bold;">Messages</div>
+    <div>📝</div>
+</div>
+
+<div id="chatList">
+    <div class="chat-item">
+        <div class="avatar"></div>
+        <div class="msg-info">
+            <strong>Godlinsta Support</strong>
+            <div class="msg-text">Welcome to your DMs!</div>
+        </div>
+    </div>
+</div>
+
+<nav class="bottom-nav">
+    <div onclick="location.href='home.html'">🏠</div>
+    <div onclick="location.href='search.html'">🔍</div>
+    <div onclick="location.href='create.html'">➕</div>
+    <div onclick="location.href='reels.html'">🎬</div>
+    <div onclick="location.href='profile.html'">👤</div>
+</nav>
+
+<script type="module">
+    // Firebase se chats fetch karne ka logic yahan aayega
+    // Aapko 'chats' collection banani hogi jisme participants aur lastMessage ho
+</script>
 </body>
 </html>

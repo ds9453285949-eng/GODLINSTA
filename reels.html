@@ -3,28 +3,37 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body{margin:0; background:#000; overflow:hidden;}
-        #reelsContainer{height:100vh; overflow-y:scroll; scroll-snap-type:y mandatory;}
-        .reel-card{height:100vh; scroll-snap-align:start; position:relative; display:flex; align-items:center;}
-        video{height:100%; width:100%; object-fit:cover;}
-        .ui{position:absolute; bottom:30px; left:20px; color:#fff; font-weight:bold; text-shadow:1px 1px 2px #000;}
+        body { margin:0; background:#000; overflow:hidden; font-family: sans-serif; }
+        #appHeader { position:fixed; top:10px; width:100%; text-align:center; color:white; z-index:99; font-weight:bold; }
+        #reelsContainer { height:100vh; overflow-y:scroll; scroll-snap-type:y mandatory; }
+        .reel-card { height:100vh; scroll-snap-align:start; position:relative; }
+        video { height:100%; width:100%; object-fit:cover; }
+        .ui-right { position:absolute; bottom:100px; right:15px; color:#fff; }
+        .ui-right div { margin-bottom:25px; font-size:28px; }
+        .caption { position:absolute; bottom:20px; left:15px; color:#fff; width:70%; }
     </style>
 </head>
 <body>
+    <div id="appHeader">GODLINSTA</div>
     <div id="reelsContainer"></div>
 
     <script type="module">
         import { db, collection, query, orderBy, onSnapshot } from "./firebase-config.js";
-        const c = document.getElementById("reelsContainer");
+        const container = document.getElementById("reelsContainer");
         
         onSnapshot(query(collection(db, "reels"), orderBy("createdat", "desc")), (snap) => {
-            c.innerHTML = "";
+            container.innerHTML = "";
             snap.forEach(doc => {
                 const d = doc.data();
-                c.innerHTML += `
+                container.innerHTML += `
                     <div class="reel-card">
-                        <video src="${d.videourl}?f_auto=auto&q_auto=best" loop autoplay playsinline muted></video>
-                        <div class="ui">${d.caption || ""}</div>
+                        <video src="${d.videourl}" loop autoplay playsinline muted></video>
+                        <div class="ui-right">
+                            <div>❤️</div>
+                            <div>💬</div>
+                            <div>➤</div>
+                        </div>
+                        <div class="caption"><strong>@godlinsta</strong> ${d.caption || ""}</div>
                     </div>`;
             });
         });

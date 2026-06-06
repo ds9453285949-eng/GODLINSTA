@@ -59,17 +59,16 @@
 </nav>
 
 <script type="module">
+    import "./auth-guard.js";
     import { auth, db } from "./firebase-config.js"; 
     import { collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    onAuthStateChanged(auth, (user) => {
-        if(!user) {
-            window.location.replace("auth.html");
-            return;
-        }
+    // Wait for auth to initialize before fetching data
+    auth.onAuthStateChanged((user) => {
+        if (!user) return;
 
-        // Real-time Profile Data (Name, Bio, Username)
+        // Fetch User Info
         const userQuery = query(collection(db, "users"), where("email", "==", user.email));
         onSnapshot(userQuery, (snap) => {
             if(!snap.empty){
@@ -80,16 +79,20 @@
             }
         });
 
-        // Real-time Posts Grid
-        const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+        // Fetch ONLY current user's posts
+        const postsQuery = query(
+            collection(db, "posts"), 
+            where("userId", "==", user.uid), 
+            orderBy("createdAt", "desc")
+        );
+        
         onSnapshot(postsQuery, (snap) => {
             const profilePosts = document.getElementById("profilePosts");
             profilePosts.innerHTML = "";
             let count = 0;
             snap.forEach((doc) => {
                 const post = doc.data();
-                // Yahan username check karo taaki sirf apni posts dikhe
-                profilePosts.innerHTML += `<img src="${post.imageUrl || post.image}">`;
+                profilePosts.innerHTML += `<img src="${post.imageUrl}">`;
                 count++;
             });
             document.getElementById("postsCount").innerText = count;

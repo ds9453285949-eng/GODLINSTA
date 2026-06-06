@@ -6,35 +6,34 @@
     <title>GODLINSTA</title>
     <style>
         body { background-color: #fafafa; font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .auth-card { background: #fff; border: 1px solid #dbdbdb; padding: 40px; width: 350px; text-align: center; }
-        .logo { font-size: 35px; margin-bottom: 25px; font-weight: bold; }
+        .container { width: 350px; text-align: center; }
+        .auth-card { background: #fff; border: 1px solid #dbdbdb; padding: 40px; }
+        .logo { font-size: 35px; font-weight: bold; margin-bottom: 25px; }
         input { width: 100%; padding: 10px; margin: 5px 0; background: #fafafa; border: 1px solid #dbdbdb; border-radius: 3px; box-sizing: border-box; }
         .btn { width: 100%; padding: 8px; background: #0095f6; border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer; margin-top: 10px; }
         .hidden { display: none; }
-        .switch-box { background: #fff; border: 1px solid #dbdbdb; padding: 20px; width: 350px; text-align: center; margin-top: 10px; }
+        .switch-box { background: #fff; border: 1px solid #dbdbdb; padding: 20px; margin-top: 10px; font-size: 14px; }
+        span { color: #0095f6; cursor: pointer; font-weight: bold; }
         a { color: #00376b; font-size: 13px; text-decoration: none; display: block; margin-top: 15px; }
-        span { color: #0095f6; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div>
-    <!-- Login Card -->
+<div class="container">
+    <!-- Login View -->
     <div class="auth-card" id="loginView">
         <div class="logo">GODLINSTA</div>
-        <input type="text" id="l-email" placeholder="Username, email, or phone">
-        <input type="password" id="l-pass" placeholder="Password">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
         <button class="btn" id="loginBtn">Log In</button>
-        <a href="#">Forgot password?</a>
+        <a href="#" id="forgotBtn">Forgot password?</a>
     </div>
 
-    <!-- Sign Up Card -->
+    <!-- Sign Up View (Hidden by default) -->
     <div class="auth-card hidden" id="signupView">
         <div class="logo">GODLINSTA</div>
-        <input type="text" id="s-email" placeholder="Mobile Number or Email">
-        <input type="text" id="s-name" placeholder="Full Name">
-        <input type="text" id="s-user" placeholder="Username">
-        <input type="password" id="s-pass" placeholder="Password">
+        <input type="text" id="s-email" placeholder="Email">
+        <input type="password" id="s-password" placeholder="Password">
         <button class="btn" id="signupBtn">Sign Up</button>
     </div>
 
@@ -44,21 +43,45 @@
     </div>
 </div>
 
-<script>
-    function toggleView() {
-        const login = document.getElementById('loginView');
-        const signup = document.getElementById('signupView');
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    
+    const firebaseConfig = { apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM", authDomain: "godlinsta.firebaseapp.com", projectId: "godlinsta", storageBucket: "godlinsta.firebasestorage.app", messagingSenderId: "808932933868", appId: "1:808932933868:web:098b5e9cb0fd4e856065c9" };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Toggle View
+    window.toggleView = () => {
+        document.getElementById('loginView').classList.toggle('hidden');
+        document.getElementById('signupView').classList.toggle('hidden');
         const text = document.getElementById('toggleText');
-        
-        login.classList.toggle('hidden');
-        signup.classList.toggle('hidden');
-        
-        if (login.classList.contains('hidden')) {
-            text.innerHTML = 'Have an account? <span onclick="toggleView()">Log in</span>';
-        } else {
-            text.innerHTML = 'Don\'t have an account? <span onclick="toggleView()">Sign up</span>';
-        }
-    }
+        text.innerHTML = document.getElementById('loginView').classList.contains('hidden') ? 
+            'Have an account? <span onclick="toggleView()">Log in</span>' : 
+            'Don\'t have an account? <span onclick="toggleView()">Sign up</span>';
+    };
+
+    // Login
+    document.getElementById("loginBtn").addEventListener("click", () => {
+        signInWithEmailAndPassword(auth, document.getElementById("email").value, document.getElementById("password").value)
+        .then(() => window.location.replace("profile.html"))
+        .catch(e => alert(e.message));
+    });
+
+    // Forgot Password
+    document.getElementById("forgotBtn").addEventListener("click", () => {
+        const email = document.getElementById("email").value;
+        if(!email) return alert("Pehle Email dalo");
+        sendPasswordResetEmail(auth, email).then(() => alert("Email bhej diya gaya hai"));
+    });
+
+    // Signup (Naya add kiya)
+    document.getElementById("signupBtn").addEventListener("click", () => {
+        createUserWithEmailAndPassword(auth, document.getElementById("s-email").value, document.getElementById("s-password").value)
+        .then(() => { alert("Account Created!"); window.location.replace("profile.html"); })
+        .catch(e => alert(e.message));
+    });
 </script>
 </body>
 </html>

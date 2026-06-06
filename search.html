@@ -2,64 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search • GODLINSTA</title>
     <style>
-        body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; padding-bottom:70px; }
-        .search-bar { padding:12px; position:sticky; top:0; background:#000; z-index:100; border-bottom:1px solid #1a1a1a; }
-        input { width:100%; padding:12px; background:#1a1a1a; border:none; border-radius:10px; color:#fff; box-sizing:border-box; outline:none; }
-        .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:2px; margin-top:2px; }
-        .grid-item { aspect-ratio:1/1; background:#111; object-fit:cover; width:100%; height:100%; }
-        .bottom-nav { position:fixed; bottom:0; width:100%; background:#000; display:flex; justify-content:space-around; padding:15px 0; border-top:1px solid #1a1a1a; z-index:1000; }
-        .nav-icon { font-size:24px; cursor:pointer; }
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; }
+        .search-bar { padding: 15px; border-bottom: 1px solid #333; }
+        input { width: 90%; padding: 10px; background: #222; border: none; border-radius: 8px; color: #fff; }
+        .results { padding: 10px; }
+        .user-item { display: flex; align-items: center; padding: 10px; gap: 15px; }
     </style>
 </head>
 <body>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search users...">
+    </div>
+    <div id="results" class="results"></div>
 
-<div class="search-bar">
-    <input type="text" id="searchInput" placeholder="🔍 Search users...">
-</div>
+    <script type="module">
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        const db = getFirestore();
 
-<div class="grid" id="exploreGrid"></div>
-
-<nav class="bottom-nav">
-    <div class="nav-icon" onclick="location.href='home.html'">🏠</div>
-    <div class="nav-icon" onclick="location.href='search.html'">🔍</div>
-    <div class="nav-icon" onclick="location.href='create.html'">➕</div>
-    <div class="nav-icon" onclick="location.href='reels.html'">🎬</div>
-    <div class="nav-icon" onclick="location.href='profile.html'">👤</div>
-</nav>
-
-<script type="module">
-    import { db, collection, query, orderBy, onSnapshot } from "./firebase-config.js";
-    
-    let allPosts = [];
-    const grid = document.getElementById("exploreGrid");
-    const searchInput = document.getElementById("searchInput");
-
-    // Fetch posts
-    onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), (snap) => {
-        allPosts = [];
-        snap.forEach((doc) => allPosts.push(doc.data()));
-        renderGrid(allPosts);
-    });
-
-    function renderGrid(posts) {
-        grid.innerHTML = "";
-        posts.forEach(p => {
-            grid.innerHTML += `<img src="${p.image}" class="grid-item">`;
+        document.getElementById("searchInput").addEventListener("input", async (e) => {
+            const val = e.target.value;
+            if(val.length > 2) {
+                const q = query(collection(db, "users"), where("username", ">=", val));
+                const snap = await getDocs(q);
+                const resDiv = document.getElementById("results");
+                resDiv.innerHTML = "";
+                snap.forEach(doc => {
+                    resDiv.innerHTML += `<div class="user-item"><h3>${doc.data().username}</h3></div>`;
+                });
+            }
         });
-    }
-
-    // Search Logic
-    searchInput.addEventListener("input", (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = allPosts.filter(p => 
-            (p.username && p.username.toLowerCase().includes(term)) || 
-            (p.caption && p.caption.toLowerCase().includes(term))
-        );
-        renderGrid(filtered);
-    });
-</script>
+    </script>
 </body>
 </html>

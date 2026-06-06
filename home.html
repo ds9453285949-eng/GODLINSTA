@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GODLINSTA</title>
+    <title>GODLINSTA - Home</title>
     <style>
         body { margin: 0; background: #000; color: #fff; font-family: sans-serif; }
         header { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #333; }
@@ -34,6 +34,8 @@
     </nav>
 
     <script type="module">
+        // Auth Guard import kiya gaya hai
+        import "./auth-guard.js";
         import { db, collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from "./firebase-config.js";
 
         // Notification Helper
@@ -45,23 +47,17 @@
             setTimeout(() => toast.remove(), 2000);
         }
 
-        // Like Button Action (7-Step Logic)
+        // Like Button Action
         window.likePost = async (btn, postId) => {
             try {
-                // 1. Loading State
                 btn.innerText = "❤️..."; 
-                
-                // 2. Database Update
                 await addDoc(collection(db, "likes"), {
                     postId: postId,
                     timestamp: serverTimestamp()
                 });
-
-                // 3. Success Feedback
                 btn.innerText = "❤️";
                 showNotification("Liked!");
             } catch (error) {
-                // 4. Error Handling
                 console.error(error);
                 showNotification("Error liking post");
                 btn.innerText = "🤍";
@@ -77,7 +73,7 @@
                 const post = doc.data();
                 feed.innerHTML += `
                     <div class="post">
-                        <p><b>${post.username}</b></p>
+                        <p style="padding:0 10px;"><b>${post.username}</b></p>
                         <img src="${post.imageUrl}" width="100%">
                         <div style="padding: 10px;">
                             <span class="action-btn" onclick="likePost(this, '${doc.id}')">🤍</span>

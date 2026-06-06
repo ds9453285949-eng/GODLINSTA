@@ -2,43 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create • GODLINSTA</title>
+    <title>Create Post • GODLINSTA</title>
     <style>
         body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
-        .box { display: flex; flex-direction: column; gap: 20px; }
+        .box { display: flex; flex-direction: column; gap: 20px; max-width: 400px; margin: auto; }
         input, button { padding: 15px; border-radius: 8px; border: none; }
         button { background: #0095f6; color: #fff; font-weight: bold; cursor: pointer; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; padding: 10px 20px; border-radius: 5px; }
     </style>
 </head>
 <body>
     <div class="box">
         <h3>Create New Post</h3>
-        <input type="file" id="fileInput">
+        <input type="text" id="imgUrl" placeholder="Enter Image URL">
         <input type="text" id="caption" placeholder="Write a caption...">
-        <button id="uploadBtn">Share</button>
-        <button onclick="location.href='home.html'" style="background:#333;">Cancel</button>
+        <button id="uploadBtn">Share Post</button>
+        <button onclick="history.back()" style="background:#333;">Cancel</button>
     </div>
 
     <script type="module">
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { db, collection, addDoc, serverTimestamp } from "./firebase-config.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        const db = getFirestore();
         const auth = getAuth();
+        const uploadBtn = document.getElementById("uploadBtn");
 
-        document.getElementById("uploadBtn").addEventListener("click", async () => {
+        function showNotification(msg) {
+            const toast = document.createElement("div");
+            toast.className = "toast";
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        uploadBtn.addEventListener("click", async () => {
+            const imgUrl = document.getElementById("imgUrl").value;
             const caption = document.getElementById("caption").value;
             const user = auth.currentUser;
-            
-            // Yahan file upload ka logic aayega (abhi placeholder)
-            await addDoc(collection(db, "posts"), {
-                username: user.email,
-                caption: caption,
-                imageUrl: "https://via.placeholder.com/400", // Yahan real image URL dalega
-                createdAt: new Date()
-            });
-            alert("Post Uploaded!");
-            location.href = "home.html";
+
+            if(!imgUrl || !caption) return showNotification("Please fill all fields!");
+
+            try {
+                // 1. Loading State
+                uploadBtn.innerText = "Uploading...";
+                uploadBtn.disabled = true;
+
+                // 2. Database Update
+                await addDoc(collection(db, "posts"), {
+                    username: user.email.split('@')[0],
+                    imageUrl: imgUrl,
+                    caption: caption,
+                    createdAt: serverTimestamp()
+                });
+
+                // 3. Success Feedback
+                showNotification("Post Uploaded Successfully!");
+                setTimeout(() => window.location.href = "home.html", 1000);
+
+            } catch (error) {
+                // 4. Error Handling
+                console.error(error);
+                showNotification("Error: Could not upload.");
+                uploadBtn.innerText = "Share Post";
+                uploadBtn.disabled = false;
+            }
         });
     </script>
 </body>

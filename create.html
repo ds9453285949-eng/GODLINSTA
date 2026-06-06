@@ -2,36 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create • GODLINSTA</title>
     <style>
-        body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; }
-        .header { padding:20px; text-align:center; font-weight:bold; font-size:18px; border-bottom:1px solid #1a1a1a; position:sticky; top:0; background:#000; }
-        .option { padding:25px 20px; border-bottom:1px solid #1a1a1a; font-size:17px; cursor:pointer; display:flex; align-items:center; transition:0.2s; }
-        .option:active { background:#111; }
-        .icon { margin-right: 20px; font-size: 24px; width: 30px; text-align: center; }
-        .coming-soon { color:#444; cursor:not-allowed; }
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
+        .box { display: flex; flex-direction: column; gap: 20px; }
+        input, button { padding: 15px; border-radius: 8px; border: none; }
+        button { background: #0095f6; color: #fff; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
+    <div class="box">
+        <h3>Create New Post</h3>
+        <input type="file" id="fileInput">
+        <input type="text" id="caption" placeholder="Write a caption...">
+        <button id="uploadBtn">Share</button>
+        <button onclick="location.href='home.html'" style="background:#333;">Cancel</button>
+    </div>
 
-<div class="header">Create New</div>
+    <script type="module">
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-<div class="option" onclick="location.href='create-post.html'">
-    <span class="icon">📷</span> Post
-</div>
+        const db = getFirestore();
+        const auth = getAuth();
 
-<div class="option" onclick="location.href='story-upload.html'">
-    <span class="icon">🟣</span> Story
-</div>
-
-<div class="option" onclick="location.href='reels-upload.html'">
-    <span class="icon">🎬</span> Reel
-</div>
-
-<div class="option coming-soon">
-    <span class="icon">📡</span> Live (Coming Soon)
-</div>
-
+        document.getElementById("uploadBtn").addEventListener("click", async () => {
+            const caption = document.getElementById("caption").value;
+            const user = auth.currentUser;
+            
+            // Yahan file upload ka logic aayega (abhi placeholder)
+            await addDoc(collection(db, "posts"), {
+                username: user.email,
+                caption: caption,
+                imageUrl: "https://via.placeholder.com/400", // Yahan real image URL dalega
+                createdAt: new Date()
+            });
+            alert("Post Uploaded!");
+            location.href = "home.html";
+        });
+    </script>
 </body>
 </html>

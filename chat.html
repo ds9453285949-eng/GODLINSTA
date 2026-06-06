@@ -27,17 +27,19 @@
 
 <div class="input-area">
     <input type="text" id="msgInput" placeholder="Message...">
-    <button onclick="sendMessage()">Send</button>
+    <button id="sendBtn">Send</button>
 </div>
 
 <script type="module">
-    import { db } from "./firebase-config.js";
-    import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    // Auth Guard integrated
+    import "./auth-guard.js";
+    import { db, auth } from "./firebase-config.js";
+    import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const auth = getAuth();
-    const chatId = new URLSearchParams(window.location.search).get("id"); // URL se chat ID
+    const chatId = new URLSearchParams(window.location.search).get("id");
     const chatBox = document.getElementById("chatBox");
+    const sendBtn = document.getElementById("sendBtn");
+    const msgInput = document.getElementById("msgInput");
 
     // Real-time message load
     if (chatId) {
@@ -46,24 +48,29 @@
             chatBox.innerHTML = "";
             snap.forEach((doc) => {
                 const m = doc.data();
+                // Check if the current user is the sender
                 const isSent = m.senderId === auth.currentUser.email;
                 chatBox.innerHTML += `<div class="msg ${isSent ? 'sent' : 'received'}">${m.text}</div>`;
             });
-            chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll
+            chatBox.scrollTop = chatBox.scrollHeight;
         });
     }
 
-    window.sendMessage = async () => {
-        const input = document.getElementById("msgInput");
-        if(input.value.trim() === "" || !chatId) return;
+    // Send Message Logic
+    sendBtn.addEventListener("click", async () => {
+        if(msgInput.value.trim() === "" || !chatId) return;
 
-        await addDoc(collection(db, "chats", chatId, "messages"), {
-            text: input.value,
-            createdAt: serverTimestamp(),
-            senderId: auth.currentUser.email
-        });
-        input.value = "";
-    };
+        try {
+            await addDoc(collection(db, "chats", chatId, "messages"), {
+                text: msgInput.value,
+                createdAt: serverTimestamp(),
+                senderId: auth.currentUser.email
+            });
+            msgInput.value = "";
+        } catch (e) {
+            alert("Error sending message");
+        }
+    });
 </script>
 </body>
 </html>

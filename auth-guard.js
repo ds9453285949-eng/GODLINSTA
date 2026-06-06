@@ -4,12 +4,16 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/f
 
 onAuthStateChanged(auth, (user) => {
     const currentPage = window.location.pathname;
+    
+    // Agar user logged in nahi hai aur wo protected page par hai
     if (!user) {
-        if (currentPage !== '/auth.html' && currentPage !== '/index.html') {
+        if (!currentPage.includes('auth.html') && !currentPage.includes('index.html')) {
             window.location.replace("auth.html");
         }
-    } else {
-        if (currentPage === '/auth.html' || currentPage === '/index.html') {
+    } 
+    // Agar user logged in hai aur wo auth page par wapas ja raha hai
+    else {
+        if (currentPage.includes('auth.html') || currentPage.includes('index.html')) {
             window.location.replace("home.html");
         }
     }

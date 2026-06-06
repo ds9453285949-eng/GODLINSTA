@@ -7,70 +7,92 @@
     <style>
         body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; display:flex; flex-direction:column; height:100vh; }
         .topbar { padding:15px; border-bottom:1px solid #1a1a1a; display:flex; align-items:center; gap:10px; background:#000; position:sticky; top:0; z-index:100; }
-        #chatBox { flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; scrollbar-width: none; }
-        .msg { padding:10px 15px; border-radius:18px; max-width:75%; font-size:15px; word-wrap: break-word; }
+        #chatBox { flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; scrollbar-width: none; }
+        .msg { padding:10px 15px; border-radius:18px; max-width:75%; font-size:15px; word-wrap: break-word; position: relative; }
         .sent { align-self:flex-end; background:#0095f6; color:white; }
         .received { align-self:flex-start; background:#262626; color:white; }
+        .status { font-size: 9px; color: #aaa; margin-top: 2px; text-align: right; }
         .input-area { padding:10px; display:flex; gap:10px; border-top:1px solid #1a1a1a; background:#000; align-items: center; }
         input { flex:1; background:#121212; border:1px solid #333; color:#fff; padding:12px; border-radius:25px; outline:none; padding-left: 20px; }
         button { background:none; border:none; color:#0095f6; font-weight:bold; cursor:pointer; padding: 10px; }
+        #typing-indicator { padding: 5px 20px; font-size: 12px; color: #888; font-style: italic; display: none; }
     </style>
 </head>
 <body>
 
 <div class="topbar">
     <div onclick="history.back()" style="cursor:pointer;">⬅️</div>
-    <strong id="chatUser">Chatting...</strong>
+    <strong id="chatUser">User</strong>
 </div>
+<div id="typing-indicator">typing...</div>
 
 <div id="chatBox"></div>
 
 <div class="input-area">
-    <input type="text" id="msgInput" placeholder="Message...">
+    <input type="text" id="msgInput" placeholder="Message..." oninput="setTyping()">
     <button id="sendBtn">Send</button>
 </div>
 
 <script type="module">
-    // Auth Guard integrated
-    import "./auth-guard.js";
     import { db, auth } from "./firebase-config.js";
-    import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const chatId = new URLSearchParams(window.location.search).get("id");
     const chatBox = document.getElementById("chatBox");
     const sendBtn = document.getElementById("sendBtn");
     const msgInput = document.getElementById("msgInput");
+    const typingInd = document.getElementById("typing-indicator");
 
-    // Real-time message load
+    // Real-time messages & Seen Status
     if (chatId) {
         const q = query(collection(db, "chats", chatId, "messages"), orderBy("createdAt", "asc"));
         onSnapshot(q, (snap) => {
             chatBox.innerHTML = "";
-            snap.forEach((doc) => {
-                const m = doc.data();
-                // Check if the current user is the sender
+            snap.forEach((docSnap) => {
+                const m = docSnap.data();
                 const isSent = m.senderId === auth.currentUser.email;
-                chatBox.innerHTML += `<div class="msg ${isSent ? 'sent' : 'received'}">${m.text}</div>`;
+                
+                // Mark as seen if received by current user
+                if (!isSent && m.status !== 'seen') {
+                    updateDoc(doc(db, "chats", chatId, "messages", docSnap.id), { status: 'seen' });
+                }
+
+                chatBox.innerHTML += `
+                    <div class="msg ${isSent ? 'sent' : 'received'}">
+                        ${m.text}
+                        <div class="status">${isSent ? (m.status || 'Sent') : ''}</div>
+                    </div>`;
             });
             chatBox.scrollTop = chatBox.scrollHeight;
         });
+
+        // Typing Listener
+        onSnapshot(doc(db, "chats", chatId), (doc) => {
+            typingInd.style.display = doc.data()?.typing === true ? 'block' : 'none';
+        });
     }
 
-    // Send Message Logic
+    // Send Logic
     sendBtn.addEventListener("click", async () => {
-        if(msgInput.value.trim() === "" || !chatId) return;
-
-        try {
-            await addDoc(collection(db, "chats", chatId, "messages"), {
-                text: msgInput.value,
-                createdAt: serverTimestamp(),
-                senderId: auth.currentUser.email
-            });
-            msgInput.value = "";
-        } catch (e) {
-            alert("Error sending message");
-        }
+        if(msgInput.value.trim() === "") return;
+        await addDoc(collection(db, "chats", chatId, "messages"), {
+            text: msgInput.value,
+            createdAt: serverTimestamp(),
+            senderId: auth.currentUser.email,
+            status: 'sent'
+        });
+        msgInput.value = "";
+        updateDoc(doc(db, "chats", chatId), { typing: false });
     });
+
+    // Set Typing
+    window.setTyping = () => {
+        updateDoc(doc(db, "chats", chatId), { typing: true });
+        clearTimeout(window.typingTimer);
+        window.typingTimer = setTimeout(() => {
+            updateDoc(doc(db, "chats", chatId), { typing: false });
+        }, 2000);
+    };
 </script>
 </body>
 </html>

@@ -3,103 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GODLINSTA - Login</title>
+    <title>GODLINSTA</title>
     <style>
-        body { margin: 0; background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
-        .page { display: none; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 20px; transition: opacity 0.3s ease; }
-        #welcomePage { display: flex; }
-        .logo { width: 100px; margin-bottom: 20px; }
-        input { width: 100%; max-width: 320px; padding: 14px; margin: 8px 0; background: #121212; border: 1px solid #333; border-radius: 8px; color: white; box-sizing: border-box; }
-        input:focus { border-color: #555; outline: none; }
-        .btn { width: 100%; max-width: 320px; padding: 14px; border: none; border-radius: 8px; background: #0095f6; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .secondary { background: transparent; border: 1px solid #333; margin-top: 15px; }
-        #msg { font-size: 13px; color: #0095f6; margin-bottom: 5px; }
+        body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .splash { text-align: center; color: white; }
+        .logo { width: 120px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
-
-    <!-- Welcome Page -->
-    <div id="welcomePage" class="page">
+    <div class="splash">
         <img src="GODL LOGO.png" class="logo">
-        <h1 style="font-family: 'Segoe UI'; letter-spacing: 1px;">GODLINSTA</h1>
-        <button class="btn" onclick="showPage('loginPage')">Log In</button>
-        <button class="btn secondary" onclick="showPage('signupPage')">Create New Account</button>
-    </div>
-
-    <!-- Login Page -->
-    <div id="loginPage" class="page">
-        <h2 style="margin-bottom: 20px;">Log In to GODLINSTA</h2>
-        <input type="text" id="lInput" placeholder="Username, email or phone">
-        <input type="password" id="lPass" placeholder="Password">
-        <button class="btn" id="lBtn">Log In</button>
-        <button class="btn secondary" onclick="showPage('welcomePage')">Back</button>
-    </div>
-
-    <!-- Signup Page -->
-    <div id="signupPage" class="page">
-        <h2 style="margin-bottom: 20px;">Sign Up</h2>
-        <input type="text" id="sName" placeholder="Full Name">
-        <input type="text" id="sUser" placeholder="Username">
-        <div id="msg"></div>
-        <input type="email" id="sEmail" placeholder="Email address">
-        <input type="password" id="sPass" placeholder="Password">
-        <button class="btn" id="sBtn">Sign Up</button>
-        <button class="btn secondary" onclick="showPage('welcomePage')">Back</button>
+        <p>From GODL</p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, addDoc, or } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-        // Config setup
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        
         const firebaseConfig = { apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM", authDomain: "godlinsta.firebaseapp.com", projectId: "godlinsta", storageBucket: "godlinsta.firebasestorage.app", messagingSenderId: "808932933868", appId: "1:808932933868:web:098b5e9cb0fd4e856065c9" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
-        // Page Navigation
-        window.showPage = (id) => {
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            document.getElementById(id).style.display = 'flex';
-        };
-
-        // Real-time Username Check
-        document.getElementById("sUser").addEventListener("input", async (e) => {
-            const val = e.target.value.toLowerCase().trim();
-            if(val.length < 3) return;
-            const snap = await getDocs(query(collection(db, "users"), where("username", "==", val)));
-            document.getElementById("msg").innerText = !snap.empty ? "Username already taken!" : "Available ✅";
+        // Session Check Logic
+        onAuthStateChanged(auth, (user) => {
+            setTimeout(() => {
+                if (user) {
+                    window.location.replace("home.html"); // Session Valid -> Home Page
+                } else {
+                    window.location.replace("auth.html"); // No Session -> Login/Signup
+                }
+            }, 2000); // 2 second ka Splash screen delay
         });
-
-        // Login Logic
-        document.getElementById("lBtn").onclick = async () => {
-            const input = document.getElementById("lInput").value.trim();
-            const pass = document.getElementById("lPass").value;
-            const btn = document.getElementById("lBtn");
-            btn.disabled = true; btn.innerText = "Authenticating...";
-            try {
-                const snap = await getDocs(query(collection(db, "users"), or(where("username", "==", input), where("email", "==", input))));
-                if(snap.empty) throw new Error("User not found!");
-                await signInWithEmailAndPassword(auth, snap.docs[0].data().email, pass);
-                window.location.href = "home.html"; // Home page par redirect karein
-            } catch(e) { alert("Login Failed: " + e.message); btn.disabled = false; btn.innerText = "Log In"; }
-        };
-
-        // Signup Logic
-        document.getElementById("sBtn").onclick = async () => {
-            const btn = document.getElementById("sBtn");
-            const u = document.getElementById("sUser").value.toLowerCase().trim();
-            const e = document.getElementById("sEmail").value.trim();
-            const p = document.getElementById("sPass").value;
-            btn.disabled = true; btn.innerText = "Creating Account...";
-            try {
-                await createUserWithEmailAndPassword(auth, e, p);
-                await addDoc(collection(db, "users"), { fullname: document.getElementById("sName").value, username: u, email: e });
-                alert("Welcome to Godlinsta!"); showPage('loginPage');
-            } catch(err) { alert(err.message); btn.disabled = false; btn.innerText = "Sign Up"; }
-        };
     </script>
 </body>
 </html>

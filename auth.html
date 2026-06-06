@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GODLINSTA</title>
+    <title>GODLINSTA - Authentication</title>
     <style>
-        body { background: #fafafa; font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        body { background: #fafafa; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .card { background: #fff; border: 1px solid #dbdbdb; padding: 40px; width: 300px; text-align: center; }
         .logo { font-size: 30px; font-weight: bold; margin-bottom: 20px; }
-        input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #dbdbdb; border-radius: 3px; box-sizing: border-box; background: #fafafa; }
+        input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #dbdbdb; border-radius: 3px; box-sizing: border-box; }
         .btn { width: 100%; padding: 8px; background: #0095f6; border: none; color: white; cursor: pointer; border-radius: 4px; font-weight: 600; margin-top: 10px; }
         .hidden { display: none; }
         .step { display: none; }
@@ -28,23 +28,15 @@
 
     <div class="card hidden" id="signupView">
         <div class="logo">GODLINSTA</div>
-        
         <div id="step1" class="step active">
             <input type="email" id="s-email" placeholder="Email Address">
             <button class="btn" onclick="next(2)">Next</button>
         </div>
-
         <div id="step2" class="step">
-            <input type="password" id="s-pass" placeholder="Create Password">
+            <input type="password" id="s-pass" placeholder="Password (8+ chars, 1 Special)">
             <button class="btn" onclick="next(3)">Next</button>
         </div>
-
         <div id="step3" class="step">
-            <input type="text" id="s-name" placeholder="Full Name">
-            <button class="btn" onclick="next(4)">Next</button>
-        </div>
-
-        <div id="step4" class="step">
             <input type="text" id="s-user" placeholder="Username">
             <button class="btn" id="finishSignup">Sign Up</button>
         </div>
@@ -56,20 +48,15 @@
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = { apiKey: "AIzaSyDJSmirvoIwieTr25NQUOtAHF-v_aTINoM", authDomain: "godlinsta.firebaseapp.com", projectId: "godlinsta", storageBucket: "godlinsta.firebasestorage.app", messagingSenderId: "808932933868", appId: "1:808932933868:web:098b5e9cb0fd4e856065c9" };
-    const auth = getAuth(initializeApp(firebaseConfig));
-    const db = getFirestore(initializeApp(firebaseConfig));
+    // Import auth-guard directly
+    import "./auth-guard.js";
+    import { auth, db } from './firebase-config.js';
+    import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     window.toggleMode = () => {
         document.getElementById('loginView').classList.toggle('hidden');
         document.getElementById('signupView').classList.toggle('hidden');
-        document.getElementById('toggleText').innerHTML = document.getElementById('loginView').classList.contains('hidden') ? 
-            'Have an account? <span onclick="toggleMode()">Log in</span>' : 
-            'Don\'t have an account? <span onclick="toggleMode()">Sign up</span>';
     };
 
     window.next = (n) => {
@@ -79,15 +66,21 @@
 
     document.getElementById("loginBtn").addEventListener("click", () => {
         signInWithEmailAndPassword(auth, document.getElementById("l-email").value, document.getElementById("l-pass").value)
-        .then(() => window.location.replace("profile.html"))
         .catch(e => alert(e.message));
     });
 
     document.getElementById("finishSignup").addEventListener("click", async () => {
+        const email = document.getElementById('s-email').value;
+        const pass = document.getElementById('s-pass').value;
+        const user = document.getElementById('s-user').value;
+        
+        const passRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+        if(!passRegex.test(pass)) return alert("Password weak! Use 8+ chars, a number, and a special character.");
+
         try {
-            const res = await createUserWithEmailAndPassword(auth, document.getElementById('s-email').value, document.getElementById('s-pass').value);
-            await setDoc(doc(db, "users", res.user.uid), { full_name: document.getElementById('s-name').value, username: document.getElementById('s-user').value });
-            window.location.replace("profile.html");
+            const res = await createUserWithEmailAndPassword(auth, email, pass);
+            await setDoc(doc(db, "users", res.user.uid), { username: user, email: email, createdAt: new Date() });
+            window.location.replace("home.html");
         } catch(e) { alert(e.message); }
     });
 </script>

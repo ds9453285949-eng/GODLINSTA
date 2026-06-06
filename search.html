@@ -3,35 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Search • GODLINSTA</title>
-    <style>
-        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; }
-        .search-bar { padding: 15px; border-bottom: 1px solid #333; }
-        input { width: 90%; padding: 10px; background: #222; border: none; border-radius: 8px; color: #fff; }
-        .results { padding: 10px; }
-        .user-item { display: flex; align-items: center; padding: 10px; gap: 15px; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search users...">
+    <div class="topbar">
+        <input type="text" id="searchInput" placeholder="Search users..." style="width:90%; padding:10px; border-radius:20px; border:none; background:#262626; color:#fff;">
     </div>
-    <div id="results" class="results"></div>
+    <div id="results" style="padding:15px;"></div>
 
     <script type="module">
-        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        const db = getFirestore();
+        import { db } from "./firebase-config.js";
+        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        document.getElementById("searchInput").addEventListener("input", async (e) => {
-            const val = e.target.value;
-            if(val.length > 2) {
-                const q = query(collection(db, "users"), where("username", ">=", val));
-                const snap = await getDocs(q);
-                const resDiv = document.getElementById("results");
-                resDiv.innerHTML = "";
-                snap.forEach(doc => {
-                    resDiv.innerHTML += `<div class="user-item"><h3>${doc.data().username}</h3></div>`;
-                });
-            }
+        const input = document.getElementById("searchInput");
+        input.addEventListener("input", async (e) => {
+            const val = e.target.value.toLowerCase();
+            if(val === "") { document.getElementById("results").innerHTML = ""; return; }
+
+            // Firestore Query
+            const q = query(collection(db, "users"), where("username", ">=", val), where("username", "<=", val + '\uf8ff'));
+            const snap = await getDocs(q);
+            
+            document.getElementById("results").innerHTML = "";
+            snap.forEach(doc => {
+                const user = doc.data();
+                document.getElementById("results").innerHTML += `
+                    <div onclick="location.href='profile.html?uid=${user.uid}'" style="display:flex; align-items:center; gap:10px; padding:10px;">
+                        <img src="${user.profilePic || 'https://ui-avatars.com/api/?name='+user.username}" style="width:40px; height:40px; border-radius:50%;">
+                        <b>${user.username}</b>
+                    </div>
+                `;
+            });
         });
     </script>
 </body>

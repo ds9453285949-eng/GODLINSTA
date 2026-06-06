@@ -4,63 +4,75 @@
     <meta charset="UTF-8">
     <title>Edit Profile • GODLINSTA</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
-        .box { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: auto; }
-        input { padding: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; }
-        button { padding: 12px; background: #0095f6; border: none; border-radius: 8px; color: #fff; cursor: pointer; }
+        body { background: #000; color: #fff; font-family: -apple-system, sans-serif; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .box { display: flex; flex-direction: column; gap: 20px; max-width: 400px; margin: auto; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 12px; color: #aaa; }
+        input, textarea { width: 100%; background: #111; border: 1px solid #333; padding: 12px; color: white; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #0095f6; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; }
+        .cancel-btn { background: #333; }
     </style>
 </head>
 <body>
+
+    <div class="header">
+        <span onclick="history.back()">Cancel</span>
+        <strong>Edit Profile</strong>
+        <span id="saveBtn" style="color: #0095f6; font-weight: bold; cursor: pointer;">Done</span>
+    </div>
+
     <div class="box">
-        <h3>Edit Profile</h3>
-        <input type="text" id="editName" placeholder="Full Name">
-        <input type="text" id="editBio" placeholder="Bio">
-        <button id="saveBtn">Save Changes</button>
-        <button onclick="history.back()" style="background:#333;">Cancel</button>
+        <div class="input-group">
+            <label>Name</label>
+            <input type="text" id="editName" placeholder="Full Name">
+        </div>
+        <div class="input-group">
+            <label>Bio</label>
+            <textarea id="editBio" rows="3" placeholder="Bio"></textarea>
+        </div>
+        <button id="saveBtnBottom">Save Changes</button>
+        <button onclick="history.back()" class="cancel-btn">Cancel</button>
     </div>
 
     <script type="module">
-        import { db } from "./firebase-config.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { collection, query, where, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import "./auth-guard.js";
+        import { auth, db } from "./firebase-config.js";
+        import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        const auth = getAuth();
         const saveBtn = document.getElementById("saveBtn");
+        const saveBtnBottom = document.getElementById("saveBtnBottom");
 
-        saveBtn.addEventListener("click", async () => {
+        const updateProfile = async (btn) => {
             const name = document.getElementById("editName").value;
             const bio = document.getElementById("editBio").value;
             const user = auth.currentUser;
 
+            if(!user) return alert("Please log in!");
+
             try {
-                // 1. Loading State
-                saveBtn.innerText = "Saving...";
-                saveBtn.disabled = true;
+                btn.innerText = "Saving...";
+                btn.disabled = true;
 
-                // 2. Database Update (Find user by email and update)
-                const q = query(collection(db, "users"), where("email", "==", user.email));
-                const snap = await getDocs(q);
-                
-                if(!snap.empty) {
-                    const userDocRef = doc(db, "users", snap.docs[0].id);
-                    await updateDoc(userDocRef, {
-                        full_name: name,
-                        bio: bio
-                    });
-                }
+                // Directly use user.uid (No need to query by email, it's inefficient)
+                const userDocRef = doc(db, "users", user.uid);
+                await updateDoc(userDocRef, {
+                    full_name: name,
+                    bio: bio
+                });
 
-                // 3. Success Feedback
                 alert("Profile Updated!");
-                window.location.href = "profile.html";
-
+                window.location.replace("profile.html");
             } catch (error) {
-                // 4. Error Handling
                 console.error(error);
                 alert("Update Failed!");
-                saveBtn.innerText = "Save Changes";
-                saveBtn.disabled = false;
+                btn.innerText = "Save Changes";
+                btn.disabled = false;
             }
-        });
+        };
+
+        saveBtn.addEventListener("click", () => updateProfile(saveBtn));
+        saveBtnBottom.addEventListener("click", () => updateProfile(saveBtnBottom));
     </script>
 </body>
 </html>

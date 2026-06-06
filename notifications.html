@@ -4,16 +4,55 @@
     <meta charset="UTF-8">
     <title>Notifications • GODLINSTA</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; }
-        .topbar { padding: 15px; border-bottom: 1px solid #1a1a1a; font-weight: bold; }
-        .notif-item { padding: 15px; border-bottom: 1px solid #1a1a1a; font-size: 14px; }
+        body { background: #000; color: #fff; font-family: -apple-system, sans-serif; margin: 0; padding-bottom: 70px; }
+        .topbar { padding: 15px; border-bottom: 1px solid #1a1a1a; font-weight: bold; position: sticky; top: 0; background: #000; }
+        .notif-item { padding: 15px; border-bottom: 1px solid #1a1a1a; font-size: 14px; display: flex; align-items: center; gap: 10px; }
         .notif-item span { font-weight: bold; }
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #1a1a1a; }
+        .nav-icon { font-size: 24px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="topbar">Notifications</div>
-    <div id="notifList">
-        <div class="notif-item"><span>Godlinsta:</span> Welcome to your new profile!</div>
-    </div>
+    <div id="notifList"></div>
+
+    <nav class="nav-bottom">
+        <div class="nav-icon" onclick="location.href='home.html'">🏠</div>
+        <div class="nav-icon" onclick="location.href='search.html'">🔍</div>
+        <div class="nav-icon" onclick="location.href='create.html'">➕</div>
+        <div class="nav-icon" onclick="location.href='reels.html'">🎬</div>
+        <div class="nav-icon" onclick="location.href='profile.html'">👤</div>
+    </nav>
+
+    <script type="module">
+        import "./auth-guard.js";
+        import { db, auth } from "./firebase-config.js";
+        import { collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const notifList = document.getElementById("notifList");
+
+        // Auth check hone ke baad notifications load karo
+        auth.onAuthStateChanged((user) => {
+            if (!user) return;
+
+            const q = query(
+                collection(db, "notifications"), 
+                where("recipientId", "==", user.uid), 
+                orderBy("createdAt", "desc")
+            );
+
+            onSnapshot(q, (snap) => {
+                notifList.innerHTML = "";
+                snap.forEach((doc) => {
+                    const n = doc.data();
+                    notifList.innerHTML += `
+                        <div class="notif-item">
+                            <span>${n.senderName}</span> ${n.text}
+                        </div>
+                    `;
+                });
+            });
+        });
+    </script>
 </body>
 </html>

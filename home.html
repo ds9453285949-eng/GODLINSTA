@@ -2,41 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GODLINSTA</title>
     <style>
         body { margin: 0; background: #000; color: #fff; font-family: sans-serif; }
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #000; padding: 15px 0; border-top: 1px solid #333; z-index: 100; }
-        .feed-container { padding: 50px 0; }
-        .post { border-bottom: 1px solid #333; margin-bottom: 20px; }
-        .post-img { width: 100%; }
+        /* Header */
+        header { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #333; }
+        /* Bottom Nav */
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #000; padding: 15px 0; border-top: 1px solid #333; }
+        .nav-icon { font-size: 24px; cursor: pointer; }
+        /* Feed Area */
+        #feed { padding-bottom: 70px; }
     </style>
 </head>
 <body>
 
-    <header style="display: flex; justify-content: space-between; padding: 15px;">
-        <div style="font-weight: bold; font-size: 20px;">GODLINSTA</div>
-        <div>➕ ❤️</div>
+    <header>
+        <div onclick="window.location.href='create.html'">➕</div>
+        <div>GODLINSTA</div>
+        <div onclick="window.location.href='notifications.html'">❤️</div>
     </header>
 
-    <div class="feed-container" id="feed">
-        <p style="text-align:center;">Loading Real-time Feed...</p>
+    <div id="feed">
+        <p style="text-align:center;">Feed Loading...</p>
     </div>
 
     <nav class="nav-bottom">
-        <div onclick="location.href='home.html'">🏠</div>
-        <div onclick="location.href='search.html'">🔍</div>
-        <div onclick="location.href='reels.html'">🎬</div>
-        <div onclick="location.href='messages.html'">✈️</div>
-        <div onclick="location.href='profile.html'">👤</div>
+        <div class="nav-icon" onclick="location.href='home.html'">🏠</div>
+        <div class="nav-icon" onclick="location.href='search.html'">🔍</div>
+        <div class="nav-icon" onclick="location.href='reels.html'">🎬</div>
+        <div class="nav-icon" onclick="location.href='messages.html'">✈️</div>
+        <div class="nav-icon" onclick="location.href='profile.html'">👤</div>
     </nav>
 
     <script type="module">
-        import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        
-        // Initialize DB
+        // Firebase import kar lo
+        import { getFirestore, collection, orderBy, query, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         const db = getFirestore();
-        
-        // Real-time Feed Listener (Flowchart requirement)
+
+        // Flowchart ke hisaab se Post Feed Load karo
         const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
         onSnapshot(q, (snapshot) => {
             const feed = document.getElementById("feed");
@@ -44,9 +48,9 @@
             snapshot.forEach((doc) => {
                 const post = doc.data();
                 feed.innerHTML += `
-                    <div class="post">
+                    <div class="post" style="margin-bottom:20px;">
                         <p><b>${post.username}</b></p>
-                        <img src="${post.imageUrl}" class="post-img">
+                        <img src="${post.imageUrl}" width="100%">
                         <p>${post.caption}</p>
                     </div>
                 `;

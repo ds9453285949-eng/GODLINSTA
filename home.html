@@ -6,13 +6,13 @@
     <title>GODLINSTA</title>
     <style>
         body { margin: 0; background: #000; color: #fff; font-family: sans-serif; }
-        /* Header */
         header { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #333; }
-        /* Bottom Nav */
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #000; padding: 15px 0; border-top: 1px solid #333; }
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #000; padding: 15px 0; border-top: 1px solid #333; z-index: 1000; }
         .nav-icon { font-size: 24px; cursor: pointer; }
-        /* Feed Area */
         #feed { padding-bottom: 70px; }
+        .post { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .action-btn { cursor: pointer; font-size: 20px; margin-right: 15px; }
+        .toast { position: fixed; bottom: 80px; left: 20px; background: #333; padding: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -23,9 +23,7 @@
         <div onclick="window.location.href='notifications.html'">❤️</div>
     </header>
 
-    <div id="feed">
-        <p style="text-align:center;">Feed Loading...</p>
-    </div>
+    <div id="feed"><p style="text-align:center;">Loading Feed...</p></div>
 
     <nav class="nav-bottom">
         <div class="nav-icon" onclick="location.href='home.html'">🏠</div>
@@ -36,11 +34,41 @@
     </nav>
 
     <script type="module">
-        // Firebase import kar lo
-        import { getFirestore, collection, orderBy, query, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        const db = getFirestore();
+        import { db, collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from "./firebase-config.js";
 
-        // Flowchart ke hisaab se Post Feed Load karo
+        // Notification Helper
+        function showNotification(msg) {
+            const toast = document.createElement("div");
+            toast.className = "toast";
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        // Like Button Action (7-Step Logic)
+        window.likePost = async (btn, postId) => {
+            try {
+                // 1. Loading State
+                btn.innerText = "❤️..."; 
+                
+                // 2. Database Update
+                await addDoc(collection(db, "likes"), {
+                    postId: postId,
+                    timestamp: serverTimestamp()
+                });
+
+                // 3. Success Feedback
+                btn.innerText = "❤️";
+                showNotification("Liked!");
+            } catch (error) {
+                // 4. Error Handling
+                console.error(error);
+                showNotification("Error liking post");
+                btn.innerText = "🤍";
+            }
+        };
+
+        // Real-time Feed
         const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
         onSnapshot(q, (snapshot) => {
             const feed = document.getElementById("feed");
@@ -48,10 +76,15 @@
             snapshot.forEach((doc) => {
                 const post = doc.data();
                 feed.innerHTML += `
-                    <div class="post" style="margin-bottom:20px;">
+                    <div class="post">
                         <p><b>${post.username}</b></p>
                         <img src="${post.imageUrl}" width="100%">
-                        <p>${post.caption}</p>
+                        <div style="padding: 10px;">
+                            <span class="action-btn" onclick="likePost(this, '${doc.id}')">🤍</span>
+                            <span class="action-btn">💬</span>
+                            <span class="action-btn">✈️</span>
+                        </div>
+                        <p style="padding:0 10px;">${post.caption}</p>
                     </div>
                 `;
             });

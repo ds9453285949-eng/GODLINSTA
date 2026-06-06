@@ -2,58 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reels</title>
+    <title>Reels • GODLINSTA</title>
     <style>
-        body { margin:0; background:#000; color:#fff; font-family: sans-serif; overflow:hidden; }
-        #reelsContainer { height:100vh; overflow-y:scroll; scroll-snap-type:y mandatory; scrollbar-width: none; }
-        .reel-card { height:100vh; width:100vw; scroll-snap-align:start; position:relative; display:flex; align-items:center; }
-        video { width:100%; height:100%; object-fit:cover; }
-        
-        .caption { position:absolute; bottom:20px; left:15px; z-index:10; font-size:14px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-        .actions { position:absolute; bottom:80px; right:15px; z-index:10; font-size:28px; text-align:center; }
-        .actions div { margin-bottom:20px; cursor:pointer; }
-        
-        .bottom-nav { position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); padding:15px 0; z-index:20; border-top:1px solid #333; }
+        body { margin: 0; background: #000; color: #fff; overflow: hidden; }
+        .reel-container { height: 100vh; scroll-snap-type: y mandatory; overflow-y: scroll; }
+        .reel-post { height: 100vh; scroll-snap-align: start; position: relative; }
+        .reel-post video { width: 100%; height: 100%; object-fit: cover; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #1a1a1a; z-index: 1000; }
     </style>
 </head>
 <body>
 
-<div id="reelsContainer"></div>
+    <div class="reel-container" id="reels">
+        </div>
 
-<nav class="bottom-nav">
-    <div onclick="location.href='home.html'">🏠</div>
-    <div onclick="location.href='search.html'">🔍</div>
-    <div onclick="location.href='reels-upload.html'">➕</div>
-    <div onclick="location.href='reels.html'">🎬</div>
-    <div onclick="location.href='profile.html'">👤</div>
-</nav>
+    <nav class="bottom-nav">
+        <div onclick="location.href='home.html'">🏠</div>
+        <div onclick="location.href='search.html'">🔍</div>
+        <div onclick="location.href='reels.html'">🎬</div>
+        <div onclick="location.href='messages.html'">✈️</div>
+        <div onclick="location.href='profile.html'">👤</div>
+    </nav>
 
-<script type="module">
-    import { db, collection, query, orderBy, onSnapshot } from "./firebase-config.js";
+    <script type="module">
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        const db = getFirestore();
 
-    window.toggleLike = (el) => { el.style.color = (el.style.color === 'red') ? '#fff' : 'red'; };
-
-    const container = document.getElementById("reelsContainer");
-    
-    onSnapshot(query(collection(db, "reels"), orderBy("createdAt", "desc")), (snap) => {
-        container.innerHTML = "";
-        snap.forEach(doc => {
-            const p = doc.data();
-            container.innerHTML += `
-                <div class="reel-card">
-                    <video src="${p.videourl}" loop autoplay playsinline muted></video>
-                    <div class="actions">
-                        <div onclick="toggleLike(this)">❤️</div>
-                        <div>💬</div>
-                        <div>✈️</div>
-                    </div>
-                    <div class="caption">
-                        <b>@user</b> ${p.caption || ""}
-                    </div>
-                </div>`;
+        onSnapshot(collection(db, "posts"), (snap) => {
+            const reelsDiv = document.getElementById("reels");
+            reelsDiv.innerHTML = "";
+            snap.forEach(doc => {
+                const reel = doc.data();
+                if(reel.type === "reel") { // Sirf reels dikhao
+                    reelsDiv.innerHTML += `
+                        <div class="reel-post">
+                            <video src="${reel.imageUrl}" autoplay loop muted></video>
+                        </div>
+                    `;
+                }
+            });
         });
-    });
-</script>
+    </script>
 </body>
 </html>

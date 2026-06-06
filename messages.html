@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <title>Messages • GODLINSTA</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; }
-        .chat-area { height: 80vh; overflow-y: scroll; padding: 20px; }
-        .input-area { position: fixed; bottom: 0; width: 100%; display: flex; padding: 10px; background: #111; }
-        input { flex: 1; padding: 10px; border-radius: 20px; border: none; }
-        button { padding: 10px 20px; border-radius: 20px; background: #0095f6; border: none; color: white; cursor: pointer; }
+        body { background: #000; color: #fff; font-family: -apple-system, sans-serif; margin: 0; padding-bottom: 70px; }
+        .chat-area { height: 85vh; overflow-y: scroll; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { background: #262626; padding: 10px 15px; border-radius: 15px; max-width: 70%; word-wrap: break-word; }
+        .my-msg { align-self: flex-end; background: #0095f6; }
+        .input-area { position: fixed; bottom: 0; width: 100%; display: flex; padding: 10px; background: #000; border-top: 1px solid #333; box-sizing: border-box; }
+        input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #333; background: #111; color: #fff; margin-right: 10px; }
+        button { padding: 10px 20px; border-radius: 20px; background: #0095f6; border: none; color: white; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -20,39 +22,46 @@
     </div>
 
     <script type="module">
-        import { db, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy } from "./firebase-config.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import "./auth-guard.js";
+        import { auth, db } from "./firebase-config.js";
+        import { collection, addDoc, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        const auth = getAuth();
+        const chatList = document.getElementById("chatList");
         const sendBtn = document.getElementById("sendBtn");
 
-        // 7-Step Logic for Sending Message
+        // Load Real-time Messages
+        const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
+        onSnapshot(q, (snapshot) => {
+            chatList.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const msg = doc.data();
+                const isMine = msg.senderId === auth.currentUser.uid;
+                chatList.innerHTML += `
+                    <div class="msg ${isMine ? 'my-msg' : ''}">
+                        ${msg.messageText}
+                    </div>
+                `;
+            });
+            chatList.scrollTop = chatList.scrollHeight; // Auto-scroll to bottom
+        });
+
+        // Send Message
         sendBtn.addEventListener("click", async () => {
-            const msg = document.getElementById("msgInput").value;
+            const msgInput = document.getElementById("msgInput");
+            const msg = msgInput.value;
             if(!msg) return;
 
             try {
-                // 1. Loading State
-                sendBtn.innerText = "Sending...";
                 sendBtn.disabled = true;
-
-                // 2. Database Update
                 await addDoc(collection(db, "messages"), {
                     messageText: msg,
                     senderId: auth.currentUser.uid,
                     createdAt: serverTimestamp()
                 });
-
-                // 3. Success Feedback
-                document.getElementById("msgInput").value = "";
-                sendBtn.innerText = "Send";
+                msgInput.value = "";
                 sendBtn.disabled = false;
-
             } catch (error) {
-                // 4. Error Handling
-                console.error(error);
-                alert("Failed to send message!");
-                sendBtn.innerText = "Send";
+                alert("Failed to send!");
                 sendBtn.disabled = false;
             }
         });

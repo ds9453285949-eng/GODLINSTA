@@ -2,108 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile • GODLINSTA</title>
     <style>
-        body { background: #000; color: #fff; font-family: -apple-system, sans-serif; padding: 20px; }
-        .container { max-width: 400px; margin: auto; }
-        .header { text-align: center; font-weight: bold; margin-bottom: 20px; }
-        .pic-container { text-align: center; margin-bottom: 20px; }
-        .profile-pic { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 1px solid #333; display: block; margin: 0 auto 10px; }
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; background: #121212; color: #fff; border: 1px solid #333; border-radius: 8px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; background: #0095f6; border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; }
-        .checkbox-group { display: flex; align-items: center; gap: 10px; margin: 10px 0; font-size: 14px; }
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
+        .box { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: auto; }
+        input { padding: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; }
+        button { padding: 12px; background: #0095f6; border: none; border-radius: 8px; color: #fff; cursor: pointer; }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="header">Edit Profile</div>
-    <div class="pic-container">
-        <img id="profilePic" src="https://via.placeholder.com/150" class="profile-pic">
-        <input type="file" id="picUpload" accept="image/*">
+    <div class="box">
+        <h3>Edit Profile</h3>
+        <input type="text" id="editName" placeholder="Full Name">
+        <input type="text" id="editBio" placeholder="Bio">
+        <button id="saveBtn">Save Changes</button>
+        <button onclick="history.back()" style="background:#333;">Cancel</button>
     </div>
-    
-    <input type="text" id="editName" placeholder="Name">
-    <input type="text" id="editUsername" placeholder="Username">
-    <textarea id="editBio" placeholder="Bio"></textarea>
-    <input type="text" id="editPronouns" placeholder="Pronouns">
-    <select id="editGender"><option value="">Select Gender</option><option value="male">Male</option><option value="female">Female</option></select>
-    <input type="text" id="editCategory" placeholder="Category">
-    <input type="text" id="editMusic" placeholder="Profile Music Name">
-    <label class="checkbox-group"><input type="checkbox" id="aiLabel"> AI Creator Label</label>
-    
-    <button class="btn" id="saveBtn">Save Profile</button>
-</div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    <script type="module">
+        import { db } from "./firebase-config.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { collection, query, where, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // App config ko yahan link karein
-    const firebaseConfig = { /* Apna Config Yahan Rakhein */ };
-    initializeApp(firebaseConfig);
-    const auth = getAuth(); const db = getFirestore(); const storage = getStorage();
+        const auth = getAuth();
+        const saveBtn = document.getElementById("saveBtn");
 
-    let userDocRef, editCount = 0, lastChanged = null;
+        saveBtn.addEventListener("click", async () => {
+            const name = document.getElementById("editName").value;
+            const bio = document.getElementById("editBio").value;
+            const user = auth.currentUser;
 
-    // Preview Image on selection
-    document.getElementById("picUpload").addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if(file) document.getElementById("profilePic").src = URL.createObjectURL(file);
-    });
+            try {
+                // 1. Loading State
+                saveBtn.innerText = "Saving...";
+                saveBtn.disabled = true;
 
-    onAuthStateChanged(auth, async (user) => {
-        if (!user) { window.location.href = "login.html"; return; }
-        const snap = await getDocs(query(collection(db, "users"), where("email", "==", user.email)));
-        if (!snap.empty) {
-            const d = snap.docs[0].data();
-            userDocRef = snap.docs[0].ref;
-            document.getElementById("editName").value = d.fullname || "";
-            document.getElementById("editUsername").value = d.username || "";
-            document.getElementById("editBio").value = d.bio || "";
-            document.getElementById("editPronouns").value = d.pronouns || "";
-            document.getElementById("editGender").value = d.gender || "";
-            document.getElementById("editCategory").value = d.category || "";
-            document.getElementById("editMusic").value = d.music || "";
-            document.getElementById("aiLabel").checked = d.aiLabel || false;
-            if(d.profilePic) document.getElementById("profilePic").src = d.profilePic;
-            editCount = d.editCount || 0;
-            lastChanged = d.lastChanged ? d.lastChanged.toDate() : null;
-        }
-    });
+                // 2. Database Update (Find user by email and update)
+                const q = query(collection(db, "users"), where("email", "==", user.email));
+                const snap = await getDocs(q);
+                
+                if(!snap.empty) {
+                    const userDocRef = doc(db, "users", snap.docs[0].id);
+                    await updateDoc(userDocRef, {
+                        full_name: name,
+                        bio: bio
+                    });
+                }
 
-    document.getElementById("saveBtn").addEventListener("click", async () => {
-        const btn = document.getElementById("saveBtn");
-        btn.innerText = "Saving..."; btn.disabled = true;
+                // 3. Success Feedback
+                alert("Profile Updated!");
+                window.location.href = "profile.html";
 
-        try {
-            let url = document.getElementById("profilePic").src;
-            const file = document.getElementById("picUpload").files[0];
-            
-            if (file) {
-                const sRef = ref(storage, 'profilePics/' + auth.currentUser.uid);
-                await uploadBytes(sRef, file);
-                url = await getDownloadURL(sRef);
+            } catch (error) {
+                // 4. Error Handling
+                console.error(error);
+                alert("Update Failed!");
+                saveBtn.innerText = "Save Changes";
+                saveBtn.disabled = false;
             }
-
-            await updateDoc(userDocRef, {
-                fullname: document.getElementById("editName").value,
-                username: document.getElementById("editUsername").value.toLowerCase(),
-                bio: document.getElementById("editBio").value,
-                pronouns: document.getElementById("editPronouns").value,
-                gender: document.getElementById("editGender").value,
-                category: document.getElementById("editCategory").value,
-                music: document.getElementById("editMusic").value,
-                aiLabel: document.getElementById("aiLabel").checked,
-                profilePic: url,
-                lastChanged: serverTimestamp()
-            });
-            alert("Profile Updated!"); window.location.href = "profile.html";
-        } catch (e) { alert("Error: " + e.message); btn.innerText = "Save Profile"; btn.disabled = false; }
-    });
-</script>
+        });
+    </script>
 </body>
 </html>

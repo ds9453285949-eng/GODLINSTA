@@ -7,20 +7,16 @@
     <style>
         body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; padding-bottom:70px; }
         .topbar { display:flex; justify-content:space-between; align-items:center; padding:15px; border-bottom:1px solid #1a1a1a; position:sticky; top:0; background:#000; z-index:1000; }
-        
         .profile-header { display:flex; align-items:center; padding:20px; gap:25px; }
         .profile-pic { width:85px; height:85px; border-radius:50%; background:#222; object-fit:cover; border:1px solid #333; }
         .stats { display:flex; gap:20px; text-align:center; flex:1; justify-content: space-around; }
         .stats h3 { margin:0; font-size:16px; }
         .stats p { margin:0; font-size:12px; color:#aaa; }
-        
         .profile-info { padding:0 20px 15px; }
         .profile-buttons { display:flex; padding:0 20px 20px; gap:8px; }
         .profile-buttons button { background:#1a1a1a; border:none; color:white; padding:8px; border-radius:8px; font-weight:600; cursor:pointer; flex:1; font-size:13px; }
-        
         .profile-posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
         .profile-posts img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background:#111; cursor:pointer; }
-        
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #1a1a1a; z-index:1000; }
         .nav-icon { font-size:24px; cursor:pointer; }
     </style>
@@ -30,7 +26,7 @@
 <div class="topbar">
     <div class="nav-icon" onclick="location.href='create.html'">➕</div>
     <div id="username" style="font-weight:bold; font-size:18px;">Loading...</div>
-    <div class="nav-icon">☰</div>
+    <div class="nav-icon" id="logoutBtn" style="cursor:pointer;">🚪</div>
 </div>
 
 <div class="profile-header">
@@ -63,30 +59,40 @@
 </nav>
 
 <script type="module">
-    import { auth, db, collection, query, where, getDocs, orderBy } from "./firebase-config.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    // Update imports to match your file structure
+    import { auth, db } from "./firebase-config.js"; 
+    import { collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     onAuthStateChanged(auth, async (user) => {
-        if(!user){ window.location.href = "login.html"; return; }
-
-        const snap = await getDocs(query(collection(db,"users"), where("email","==",user.email)));
-        if(!snap.empty){
-            const data = snap.docs[0].data();
-            document.getElementById("username").innerText = data.username;
-            document.getElementById("name").innerText = data.fullname || "";
-            document.getElementById("bio").innerText = data.bio || "";
-            if(data.profilePic) document.getElementById("profileImage").src = data.profilePic;
-
-            // Fetch User Posts
-            const postsSnap = await getDocs(query(collection(db,"posts"), where("username","==",data.username), orderBy("createdAt", "desc")));
-            const profilePosts = document.getElementById("profilePosts");
-            
-            profilePosts.innerHTML = "";
-            postsSnap.forEach((doc)=>{
-                profilePosts.innerHTML += `<img src="${doc.data().image}">`;
-            });
-            document.getElementById("postsCount").innerText = postsSnap.size;
+        if(!user){ 
+            window.location.replace("auth.html"); // Yahan 'login.html' ki jagah 'auth.html' use karein
+            return; 
         }
+
+        try {
+            const snap = await getDocs(query(collection(db,"users"), where("email","==", user.email)));
+            if(!snap.empty){
+                const data = snap.docs[0].data();
+                document.getElementById("username").innerText = data.username;
+                document.getElementById("name").innerText = data.full_name || "New User";
+                document.getElementById("bio").innerText = data.bio || "No bio yet.";
+
+                // Fetch User Posts
+                const postsSnap = await getDocs(query(collection(db,"posts"), where("username","==", data.username), orderBy("createdAt", "desc")));
+                const profilePosts = document.getElementById("profilePosts");
+                profilePosts.innerHTML = "";
+                postsSnap.forEach((doc)=>{
+                    profilePosts.innerHTML += `<img src="${doc.data().image}">`;
+                });
+                document.getElementById("postsCount").innerText = postsSnap.size;
+            }
+        } catch(e) { console.error(e); }
+    });
+
+    // Logout Function
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        signOut(auth).then(() => window.location.replace("auth.html"));
     });
 </script>
 </body>

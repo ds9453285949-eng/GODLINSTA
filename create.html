@@ -21,10 +21,11 @@
     </div>
 
     <script type="module">
-        import { db, collection, addDoc, serverTimestamp } from "./firebase-config.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        // Auth Guard aur Firebase Config import
+        import "./auth-guard.js";
+        import { auth, db } from "./firebase-config.js";
+        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        const auth = getAuth();
         const uploadBtn = document.getElementById("uploadBtn");
 
         function showNotification(msg) {
@@ -41,26 +42,24 @@
             const user = auth.currentUser;
 
             if(!imgUrl || !caption) return showNotification("Please fill all fields!");
+            if(!user) return showNotification("You must be logged in!");
 
             try {
-                // 1. Loading State
                 uploadBtn.innerText = "Uploading...";
                 uploadBtn.disabled = true;
 
-                // 2. Database Update
                 await addDoc(collection(db, "posts"), {
+                    userId: user.uid,
                     username: user.email.split('@')[0],
                     imageUrl: imgUrl,
                     caption: caption,
                     createdAt: serverTimestamp()
                 });
 
-                // 3. Success Feedback
                 showNotification("Post Uploaded Successfully!");
                 setTimeout(() => window.location.href = "home.html", 1000);
 
             } catch (error) {
-                // 4. Error Handling
                 console.error(error);
                 showNotification("Error: Could not upload.");
                 uploadBtn.innerText = "Share Post";

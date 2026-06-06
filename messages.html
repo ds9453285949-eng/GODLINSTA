@@ -2,69 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages • GODLINSTA</title>
+    <title>Messages</title>
     <style>
-        body { margin:0; background:#000; color:#fff; font-family: -apple-system, sans-serif; padding-bottom:70px; }
-        .topbar { padding:15px; border-bottom:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:#000; }
-        .chat-item { padding:15px; display:flex; align-items:center; gap:15px; cursor:pointer; }
-        .chat-item:hover { background:#111; }
-        .avatar { width:52px; height:52px; background:#333; border-radius:50%; object-fit:cover; }
-        .msg-info { flex-grow:1; overflow:hidden; }
-        .msg-text { color:#aaa; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .bottom-nav { position:fixed; bottom:0; width:100%; background:#000; display:flex; justify-content:space-around; padding:15px 0; border-top:1px solid #1a1a1a; z-index:1000; }
-        .nav-icon { font-size:24px; cursor:pointer; }
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; }
+        .top-bar { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #333; gap: 20px; }
+        .chat-list { padding: 10px; }
+        .chat-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #222; }
+        .avatar { width: 50px; height: 50px; background: #333; border-radius: 50%; margin-right: 15px; }
     </style>
 </head>
 <body>
 
-<div class="topbar">
-    <div onclick="history.back()" style="cursor:pointer;">⬅️</div>
-    <div style="font-weight:bold; font-size:18px;">Messages</div>
-    <div style="cursor:pointer;">📝</div>
-</div>
-
-<div id="chatList">
+    <div class="top-bar">
+        <span onclick="window.location.href='home.html'">⬅️</span>
+        <h3>Direct Messages</h3>
+    </div>
+    
+    <div class="chat-list" id="chatList">
+        <p style="text-align:center; color:gray;">Loading chats...</p>
     </div>
 
-<nav class="bottom-nav">
-    <div class="nav-icon" onclick="location.href='home.html'">🏠</div>
-    <div class="nav-icon" onclick="location.href='search.html'">🔍</div>
-    <div class="nav-icon" onclick="location.href='create.html'">➕</div>
-    <div class="nav-icon" onclick="location.href='reels.html'">🎬</div>
-    <div class="nav-icon" onclick="location.href='profile.html'">👤</div>
-</nav>
+    <script type="module">
+        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-<script type="module">
-    import { db, collection, query, where, orderBy, onSnapshot } from "./firebase-config.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-    const auth = getAuth();
-    const chatList = document.getElementById("chatList");
-
-    // Current user ke chats load karna
-    onAuthStateChanged(auth, (user) => {
-        if (!user) return;
+        const db = getFirestore();
+        const auth = getAuth();
         
-        const q = query(collection(db, "chats"), where("participants", "array-contains", user.email), orderBy("lastUpdated", "desc"));
-        
-        onSnapshot(q, (snap) => {
-            chatList.innerHTML = "";
-            snap.forEach((doc) => {
-                const chat = doc.data();
-                const otherUser = chat.participants.find(p => p !== user.email);
-                
-                chatList.innerHTML += `
-                    <div class="chat-item" onclick="location.href='chat.html?id=${doc.id}'">
-                        <img src="https://ui-avatars.com/api/?name=${otherUser}" class="avatar">
-                        <div class="msg-info">
-                            <strong>${otherUser}</strong>
-                            <div class="msg-text">${chat.lastMessage || "Start conversation..."}</div>
-                        </div>
-                    </div>`;
-            });
+        // Current user ke messages load karo
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const q = query(collection(db, "messages"), where("receiverId", "==", user.uid));
+                onSnapshot(q, (snapshot) => {
+                    const chatList = document.getElementById("chatList");
+                    chatList.innerHTML = "";
+                    snapshot.forEach((doc) => {
+                        const msg = doc.data();
+                        chatList.innerHTML += `
+                            <div class="chat-item">
+                                <div class="avatar"></div>
+                                <div>
+                                    <p>User</p>
+                                    <small>${msg.messageText}</small>
+                                </div>
+                            </div>
+                        `;
+                    });
+                });
+            }
         });
-    });
-</script>
+    </script>
 </body>
 </html>
